@@ -1,0 +1,483 @@
+{
+  "entities": {
+    "User": {
+      "title": "User",
+      "description": "Authenticated ZENVEGO user profile with role workspace preference (non-admin public roles only).",
+      "type": "object",
+      "properties": {
+        "uid": { "type": "string", "maxLength": 128, "pattern": "^[a-zA-Z0-9_\\-]+$" },
+        "displayName": { "type": "string", "minLength": 1, "maxLength": 120 },
+        "email": { "type": "string", "format": "email", "maxLength": 200 },
+        "phone": { "type": "string", "maxLength": 24 },
+        "activeRole": { "type": "string", "enum": ["customer", "grower", "delivery", "bulk"] },
+        "photoURL": { "type": "string", "maxLength": 600 },
+        "avatarType": { "type": "string", "enum": ["zenvego", "personal"] },
+        "avatarPreset": { "type": "string", "maxLength": 40 },
+        "customAvatarData": { "type": "string", "maxLength": 32000 },
+        "city": { "type": "string", "maxLength": 80 },
+        "bio": { "type": "string", "maxLength": 240 },
+        "deliveryNote": { "type": "string", "maxLength": 200 },
+        "organizationName": { "type": "string", "maxLength": 120 },
+        "defaultAddressId": { "type": "string", "maxLength": 128 },
+        "profileCompleted": { "type": "boolean" },
+        "walletBalance": { "type": "number" },
+        "savedUpiId": { "type": "string", "maxLength": 80 },
+        "language": { "type": "string", "maxLength": 24 },
+        "favoriteGrowerIds": { "type": "array" },
+        "registeredPortals": { "type": "array" },
+        "createdAt": { "type": "string", "format": "date-time" },
+        "updatedAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["uid", "displayName", "activeRole", "createdAt", "updatedAt"]
+    },
+    "Address": {
+      "title": "Address",
+      "description": "Customer saved delivery address with real coordinates.",
+      "type": "object",
+      "properties": {
+        "userId": { "type": "string", "maxLength": 128, "pattern": "^[a-zA-Z0-9_\\-]+$" },
+        "label": { "type": "string", "minLength": 1, "maxLength": 40 },
+        "formattedAddress": { "type": "string", "minLength": 3, "maxLength": 300 },
+        "lat": { "type": "number" },
+        "lng": { "type": "number" },
+        "serviceable": { "type": "boolean" },
+        "createdAt": { "type": "string", "format": "date-time" },
+        "updatedAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["userId", "label", "formattedAddress", "lat", "lng", "serviceable", "createdAt", "updatedAt"]
+    },
+    "CartItem": {
+      "title": "CartItem",
+      "description": "Persistent shopping cart item owned by a customer.",
+      "type": "object",
+      "properties": {
+        "userId": { "type": "string", "maxLength": 128, "pattern": "^[a-zA-Z0-9_\\-]+$" },
+        "productId": { "type": "string", "maxLength": 128, "pattern": "^[a-zA-Z0-9_\\-]+$" },
+        "growerId": { "type": "string", "maxLength": 128, "pattern": "^[a-zA-Z0-9_\\-]+$" },
+        "quantity": { "type": "number" },
+        "updatedAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["userId", "productId", "growerId", "quantity", "updatedAt"]
+    },
+    "GrowerProfile": {
+      "title": "GrowerProfile",
+      "description": "Public storefront and farm profile for an urban grower or local farmer (zero private KYC PII).",
+      "type": "object",
+      "properties": {
+        "ownerId": { "type": "string", "maxLength": 128, "pattern": "^[a-zA-Z0-9_\\-]+$" },
+        "farmName": { "type": "string", "minLength": 2, "maxLength": 120 },
+        "growerName": { "type": "string", "minLength": 2, "maxLength": 120 },
+        "farmType": { "type": "string", "maxLength": 80 },
+        "areaName": { "type": "string", "maxLength": 160 },
+        "lat": { "type": "number" },
+        "lng": { "type": "number" },
+        "fssaiNumber": { "type": "string", "maxLength": 40 },
+        "livenessConfirmed": { "type": "boolean" },
+        "verificationStatus": { "type": "string", "enum": ["pending", "verified", "correction_needed", "rejected"] },
+        "chemicalFree": { "type": "boolean" },
+        "createdAt": { "type": "string", "format": "date-time" },
+        "updatedAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["ownerId", "farmName", "growerName", "farmType", "areaName", "lat", "lng", "verificationStatus", "createdAt", "updatedAt"]
+    },
+    "GrowerKyc": {
+      "title": "GrowerKyc",
+      "description": "Private grower KYC document containing sensitive phone, ID last-4, live selfie, and farm proof photo (strictly owner & authorized reviewer only).",
+      "type": "object",
+      "properties": {
+        "ownerId": { "type": "string", "maxLength": 128, "pattern": "^[a-zA-Z0-9_\\-]+$" },
+        "phone": { "type": "string", "maxLength": 24 },
+        "fssaiNumber": { "type": "string", "maxLength": 40 },
+        "govIdType": { "type": "string", "enum": ["aadhaar", "pan", "voter_id"] },
+        "govIdLast4": { "type": "string", "maxLength": 20 },
+        "liveSelfieData": { "type": "string", "maxLength": 32000 },
+        "farmPhotoData": { "type": "string", "maxLength": 32000 },
+        "livePhotoCapturedAt": { "type": "string", "maxLength": 64 },
+        "livenessConfirmed": { "type": "boolean" },
+        "reviewStatus": { "type": "string", "enum": ["pending", "verified", "correction_needed", "rejected"] },
+        "reviewNote": { "type": "string", "maxLength": 240 },
+        "createdAt": { "type": "string", "format": "date-time" },
+        "updatedAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["ownerId", "phone", "govIdType", "govIdLast4", "liveSelfieData", "farmPhotoData", "livenessConfirmed", "reviewStatus", "createdAt", "updatedAt"]
+    },
+    "DeliveryProfile": {
+      "title": "DeliveryProfile",
+      "description": "Private delivery partner onboarding profile, EV vehicle setup, live photo KYC, and active shift state.",
+      "type": "object",
+      "properties": {
+        "userId": { "type": "string", "maxLength": 128, "pattern": "^[a-zA-Z0-9_\\-]+$" },
+        "partnerName": { "type": "string", "minLength": 2, "maxLength": 120 },
+        "phone": { "type": "string", "maxLength": 24 },
+        "emergencyPhone": { "type": "string", "maxLength": 24 },
+        "vehicleType": { "type": "string", "enum": ["ev", "petrol", "bicycle"] },
+        "vehiclePlate": { "type": "string", "maxLength": 32 },
+        "dlNumber": { "type": "string", "maxLength": 40 },
+        "govIdType": { "type": "string", "enum": ["aadhaar", "pan", "dl"] },
+        "govIdLast4": { "type": "string", "maxLength": 20 },
+        "liveSelfieData": { "type": "string", "maxLength": 32000 },
+        "idDocumentPhotoData": { "type": "string", "maxLength": 32000 },
+        "livePhotoCapturedAt": { "type": "string", "maxLength": 64 },
+        "livenessConfirmed": { "type": "boolean" },
+        "clusterArea": { "type": "string", "maxLength": 120 },
+        "availableForDispatch": { "type": "boolean" },
+        "kycStatus": { "type": "string", "enum": ["submitted", "verified", "rejected"] },
+        "reviewNote": { "type": "string", "maxLength": 240 },
+        "createdAt": { "type": "string", "format": "date-time" },
+        "updatedAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["userId", "partnerName", "vehicleType", "clusterArea", "availableForDispatch", "kycStatus", "createdAt", "updatedAt"]
+    },
+    "Product": {
+      "title": "Product",
+      "description": "Live produce listing published by a grower with real atomic stock counts.",
+      "type": "object",
+      "properties": {
+        "growerId": { "type": "string", "maxLength": 128, "pattern": "^[a-zA-Z0-9_\\-]+$" },
+        "farmName": { "type": "string", "minLength": 2, "maxLength": 120 },
+        "name": { "type": "string", "minLength": 2, "maxLength": 120 },
+        "variety": { "type": "string", "maxLength": 120 },
+        "category": { "type": "string", "enum": ["Leafy Greens", "Vegetables", "Heirloom", "Fruits", "Microgreens", "Herbs"] },
+        "bedLabel": { "type": "string", "maxLength": 40 },
+        "price": { "type": "number" },
+        "unit": { "type": "string", "maxLength": 24 },
+        "unitShort": { "type": "string", "maxLength": 12 },
+        "stock": { "type": "number" },
+        "reserved": { "type": "number" },
+        "harvestedAt": { "type": "string", "maxLength": 60 },
+        "available": { "type": "boolean" },
+        "chemicalFree": { "type": "boolean" },
+        "harvestedToday": { "type": "boolean" },
+        "image": { "type": "string", "maxLength": 600 },
+        "lat": { "type": "number" },
+        "lng": { "type": "number" },
+        "growerNote": { "type": "string", "maxLength": 400 },
+        "createdAt": { "type": "string", "format": "date-time" },
+        "updatedAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["growerId", "farmName", "name", "category", "price", "unit", "unitShort", "stock", "reserved", "harvestedAt", "available", "chemicalFree", "harvestedToday", "image", "createdAt", "updatedAt"]
+    },
+    "Order": {
+      "title": "Order",
+      "description": "Customer-facing parent order spanning one or more growers.",
+      "type": "object",
+      "properties": {
+        "orderCode": { "type": "string", "maxLength": 32 },
+        "customerId": { "type": "string", "maxLength": 128, "pattern": "^[a-zA-Z0-9_\\-]+$" },
+        "customerName": { "type": "string", "maxLength": 120 },
+        "deliveryAddress": { "type": "string", "maxLength": 300 },
+        "deliveryLat": { "type": "number" },
+        "deliveryLng": { "type": "number" },
+        "assignedPartnerId": { "type": "string", "maxLength": 128 },
+        "status": { "type": "string", "enum": ["created", "confirmed", "preparing", "ready_for_pickup", "out_for_delivery", "delivered", "cancelled"] },
+        "paymentStatus": { "type": "string", "enum": ["pending", "pending_upi_review", "verified", "doorstep_qr", "failed", "refunded"] },
+        "paymentMethod": { "type": "string", "maxLength": 80 },
+        "paymentRef": { "type": "string", "maxLength": 120 },
+        "itemsTotal": { "type": "number" },
+        "deliveryFee": { "type": "number" },
+        "totalPaid": { "type": "number" },
+        "handoverPin": { "type": "string", "maxLength": 8 },
+        "growerIds": { "type": "array" },
+        "items": { "type": "array" },
+        "createdAt": { "type": "string", "format": "date-time" },
+        "updatedAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["orderCode", "customerId", "customerName", "deliveryAddress", "status", "paymentStatus", "paymentMethod", "itemsTotal", "deliveryFee", "totalPaid", "handoverPin", "growerIds", "items", "createdAt", "updatedAt"]
+    },
+    "SellerOrder": {
+      "title": "SellerOrder",
+      "description": "Per-grower fulfilment order derived from a parent order.",
+      "type": "object",
+      "properties": {
+        "parentOrderId": { "type": "string", "maxLength": 128, "pattern": "^[a-zA-Z0-9_\\-]+$" },
+        "orderCode": { "type": "string", "maxLength": 32 },
+        "customerId": { "type": "string", "maxLength": 128, "pattern": "^[a-zA-Z0-9_\\-]+$" },
+        "customerName": { "type": "string", "maxLength": 120 },
+        "customerArea": { "type": "string", "maxLength": 200 },
+        "growerId": { "type": "string", "maxLength": 128, "pattern": "^[a-zA-Z0-9_\\-]+$" },
+        "farmName": { "type": "string", "maxLength": 120 },
+        "assignedPartnerId": { "type": "string", "maxLength": 128 },
+        "status": { "type": "string", "enum": ["awaiting_acceptance", "accepted", "preparing", "ready_for_pickup", "picked_up", "delivered", "rejected"] },
+        "rejectionReason": { "type": "string", "maxLength": 240 },
+        "handoverPin": { "type": "string", "maxLength": 8 },
+        "sealId": { "type": "string", "maxLength": 32 },
+        "grossAmount": { "type": "number" },
+        "platformFee": { "type": "number" },
+        "netPayout": { "type": "number" },
+        "items": { "type": "array" },
+        "createdAt": { "type": "string", "format": "date-time" },
+        "updatedAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["parentOrderId", "orderCode", "customerId", "customerName", "customerArea", "growerId", "farmName", "status", "handoverPin", "grossAmount", "platformFee", "netPayout", "items", "createdAt", "updatedAt"]
+    },
+    "DeliveryAssignment": {
+      "title": "DeliveryAssignment",
+      "description": "Active hyperlocal pickup and drop assignment linking a seller order to a verified delivery partner.",
+      "type": "object",
+      "properties": {
+        "parentOrderId": { "type": "string", "maxLength": 128, "pattern": "^[a-zA-Z0-9_\\-]+$" },
+        "sellerOrderId": { "type": "string", "maxLength": 128, "pattern": "^[a-zA-Z0-9_\\-]+$" },
+        "orderCode": { "type": "string", "maxLength": 32 },
+        "customerId": { "type": "string", "maxLength": 128, "pattern": "^[a-zA-Z0-9_\\-]+$" },
+        "growerId": { "type": "string", "maxLength": 128, "pattern": "^[a-zA-Z0-9_\\-]+$" },
+        "partnerId": { "type": "string", "maxLength": 128 },
+        "partnerName": { "type": "string", "maxLength": 120 },
+        "farmName": { "type": "string", "maxLength": 120 },
+        "pickupAddress": { "type": "string", "maxLength": 240 },
+        "pickupLat": { "type": "number" },
+        "pickupLng": { "type": "number" },
+        "dropoffAddress": { "type": "string", "maxLength": 300 },
+        "dropoffLat": { "type": "number" },
+        "dropoffLng": { "type": "number" },
+        "status": { "type": "string", "enum": ["open", "accepted", "picked_up", "delivered", "issue_reported"] },
+        "pickupVerifiedAt": { "type": "string", "maxLength": 64 },
+        "deliveredAt": { "type": "string", "maxLength": 64 },
+        "issueNote": { "type": "string", "maxLength": 240 },
+        "partnerLat": { "type": "number" },
+        "partnerLng": { "type": "number" },
+        "lastLocationAt": { "type": "string", "maxLength": 64 },
+        "createdAt": { "type": "string", "format": "date-time" },
+        "updatedAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["parentOrderId", "sellerOrderId", "orderCode", "customerId", "growerId", "farmName", "pickupAddress", "pickupLat", "pickupLng", "dropoffAddress", "dropoffLat", "dropoffLng", "status", "createdAt", "updatedAt"]
+    },
+    "Settlement": {
+      "title": "Settlement",
+      "description": "Grower financial ledger record tracking 90% net grower allocation (10% platform commission) and admin-reconciled settlement status.",
+      "type": "object",
+      "properties": {
+        "growerId": { "type": "string", "maxLength": 128, "pattern": "^[a-zA-Z0-9_\\-]+$" },
+        "orderCode": { "type": "string", "maxLength": 32 },
+        "summary": { "type": "string", "maxLength": 200 },
+        "status": { "type": "string", "enum": ["payable", "settled"] },
+        "isBulk": { "type": "boolean" },
+        "gross": { "type": "number" },
+        "fee": { "type": "number" },
+        "net": { "type": "number" },
+        "refNote": { "type": "string", "maxLength": 120 },
+        "createdAt": { "type": "string", "format": "date-time" },
+        "updatedAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["growerId", "orderCode", "summary", "status", "gross", "fee", "net", "refNote", "createdAt", "updatedAt"]
+    },
+    "Notification": {
+      "title": "Notification",
+      "description": "Event-driven notification targeted to a specific user UID.",
+      "type": "object",
+      "properties": {
+        "userId": { "type": "string", "maxLength": 128, "pattern": "^[a-zA-Z0-9_\\-]+$" },
+        "eventType": { "type": "string", "maxLength": 64 },
+        "title": { "type": "string", "maxLength": 120 },
+        "body": { "type": "string", "maxLength": 300 },
+        "targetRole": { "type": "string", "enum": ["customer", "grower", "delivery", "bulk"] },
+        "targetScreen": { "type": "string", "maxLength": 64 },
+        "unread": { "type": "boolean" },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["userId", "eventType", "title", "body", "targetRole", "targetScreen", "unread", "createdAt"]
+    },
+    "BulkEnquiry": {
+      "title": "BulkEnquiry",
+      "description": "Institutional buyer wholesale procurement enquiry and grower quotation flow.",
+      "type": "object",
+      "properties": {
+        "buyerId": { "type": "string", "maxLength": 128, "pattern": "^[a-zA-Z0-9_\\-]+$" },
+        "organizationName": { "type": "string", "minLength": 2, "maxLength": 120 },
+        "produceName": { "type": "string", "minLength": 2, "maxLength": 120 },
+        "quantityKg": { "type": "number" },
+        "frequency": { "type": "string", "enum": ["one_time", "daily", "weekly"] },
+        "deliveryArea": { "type": "string", "maxLength": 200 },
+        "status": { "type": "string", "enum": ["open", "quoted", "accepted", "rejected"] },
+        "quotedGrowerId": { "type": "string", "maxLength": 128 },
+        "quotedFarmName": { "type": "string", "maxLength": 120 },
+        "quotedPricePerKg": { "type": "number" },
+        "quoteNotes": { "type": "string", "maxLength": 300 },
+        "createdAt": { "type": "string", "format": "date-time" },
+        "updatedAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["buyerId", "organizationName", "produceName", "quantityKg", "frequency", "deliveryArea", "status", "createdAt", "updatedAt"]
+    },
+    "SupportTicket": {
+      "title": "SupportTicket",
+      "description": "User-submitted Customer Care support request persisted in private user subcollection.",
+      "type": "object",
+      "properties": {
+        "userId": { "type": "string", "maxLength": 128, "pattern": "^[a-zA-Z0-9_\\-]+$" },
+        "category": { "type": "string", "enum": ["order_issue", "delivery", "grower_payout", "address_account", "bulk_supply", "general"] },
+        "orderCode": { "type": "string", "maxLength": 32 },
+        "subject": { "type": "string", "minLength": 3, "maxLength": 120 },
+        "message": { "type": "string", "minLength": 5, "maxLength": 800 },
+        "contactPhone": { "type": "string", "maxLength": 24 },
+        "status": { "type": "string", "enum": ["open", "resolved"] },
+        "createdAt": { "type": "string", "format": "date-time" },
+        "updatedAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["userId", "category", "subject", "message", "status", "createdAt", "updatedAt"]
+    },
+    "WalletTransaction": {
+      "title": "WalletTransaction",
+      "description": "Immutable Green Escrow Wallet ledger transaction for top-up requests, escrow holds, order payments, and verified refunds.",
+      "type": "object",
+      "properties": {
+        "userId": { "type": "string", "maxLength": 128, "pattern": "^[a-zA-Z0-9_\\-]+$" },
+        "type": { "type": "string", "enum": ["topup", "order_debit", "escrow_hold", "escrow_release", "refund"] },
+        "status": { "type": "string", "enum": ["pending_verification", "credited", "completed", "rejected"] },
+        "amount": { "type": "number" },
+        "orderCode": { "type": "string", "maxLength": 32 },
+        "referenceId": { "type": "string", "maxLength": 80 },
+        "method": { "type": "string", "maxLength": 60 },
+        "note": { "type": "string", "maxLength": 200 },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["userId", "type", "amount", "method", "note", "createdAt"]
+    },
+    "AuditLog": {
+      "title": "AuditLog",
+      "description": "Append-only administrative audit trail exclusively writable and readable by authorized platform operators.",
+      "type": "object",
+      "properties": {
+        "actorUid": { "type": "string", "maxLength": 128 },
+        "actorEmail": { "type": "string", "maxLength": 200 },
+        "action": { "type": "string", "maxLength": 80 },
+        "targetCollection": { "type": "string", "maxLength": 64 },
+        "targetId": { "type": "string", "maxLength": 128 },
+        "reason": { "type": "string", "maxLength": 400 },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["actorUid", "actorEmail", "action", "targetCollection", "targetId", "reason", "createdAt"]
+    },
+    "PlatformSetting": {
+      "title": "PlatformSetting",
+      "description": "Operational marketplace configuration (commission bps, delivery radius, fees) writable only by authorized operators.",
+      "type": "object",
+      "properties": {
+        "commissionBps": { "type": "number" },
+        "baseDeliveryFeeInr": { "type": "number" },
+        "extraGrowerFeeInr": { "type": "number" },
+        "freeDeliveryThresholdInr": { "type": "number" },
+        "maxRadiusKm": { "type": "number" },
+        "updatedAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["commissionBps", "baseDeliveryFeeInr", "maxRadiusKm", "updatedAt"]
+    },
+    "OrderTrackingCurrent": {
+      "title": "OrderTrackingCurrent",
+      "description": "Live GPS telemetry snapshot for an active delivery stored at orders/{orderId}/tracking/current.",
+      "type": "object",
+      "properties": {
+        "orderId": { "type": "string", "maxLength": 128, "pattern": "^[a-zA-Z0-9_\\-]+$" },
+        "assignmentId": { "type": "string", "maxLength": 128, "pattern": "^[a-zA-Z0-9_\\-]+$" },
+        "partnerId": { "type": "string", "maxLength": 128, "pattern": "^[a-zA-Z0-9_\\-]+$" },
+        "partnerName": { "type": "string", "maxLength": 120 },
+        "lat": { "type": "number" },
+        "lng": { "type": "number" },
+        "accuracy": { "type": "number" },
+        "heading": { "type": "number" },
+        "speed": { "type": "number" },
+        "stage": { "type": "string", "enum": ["assigned", "en_route_to_pickup", "picked_up", "out_for_delivery", "near_destination", "arrived", "delivered", "cancelled"] },
+        "trackingActive": { "type": "boolean" },
+        "lastUpdatedAt": { "type": "string", "maxLength": 64 },
+        "updatedAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["orderId", "assignmentId", "partnerId", "lat", "lng", "stage", "trackingActive", "lastUpdatedAt", "updatedAt"]
+    },
+    "OrderTrackingEvent": {
+      "title": "OrderTrackingEvent",
+      "description": "Append-only delivery status milestone event stored at orders/{orderId}/orderEvents/{eventId}.",
+      "type": "object",
+      "properties": {
+        "orderId": { "type": "string", "maxLength": 128, "pattern": "^[a-zA-Z0-9_\\-]+$" },
+        "customerId": { "type": "string", "maxLength": 128, "pattern": "^[a-zA-Z0-9_\\-]+$" },
+        "growerId": { "type": "string", "maxLength": 128, "pattern": "^[a-zA-Z0-9_\\-]+$" },
+        "partnerId": { "type": "string", "maxLength": 128 },
+        "eventType": { "type": "string", "enum": ["ORDER_CONFIRMED", "GROWER_PREPARING", "READY_FOR_PICKUP", "PARTNER_ASSIGNED", "PICKED_UP", "OUT_FOR_DELIVERY", "NEAR_DESTINATION", "ARRIVED", "DELIVERED", "DELIVERY_ISSUE", "CANCELLED"] },
+        "label": { "type": "string", "minLength": 1, "maxLength": 120 },
+        "note": { "type": "string", "maxLength": 300 },
+        "actorUid": { "type": "string", "maxLength": 128, "pattern": "^[a-zA-Z0-9_\\-]+$" },
+        "actorRole": { "type": "string", "enum": ["customer", "grower", "delivery", "system"] },
+        "lat": { "type": "number" },
+        "lng": { "type": "number" },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["orderId", "customerId", "growerId", "eventType", "label", "actorUid", "actorRole", "createdAt"]
+    }
+  },
+  "firestore": {
+    "/users/{userId}": {
+      "schema": { "$ref": "#/entities/User" },
+      "description": "User account document storing non-admin role workspace preference, avatar choice, protected wallet balance, and editable profile details."
+    },
+    "/users/{userId}/addresses/{addressId}": {
+      "schema": { "$ref": "#/entities/Address" },
+      "description": "Private customer delivery addresses with coordinates."
+    },
+    "/users/{userId}/cart/{itemId}": {
+      "schema": { "$ref": "#/entities/CartItem" },
+      "description": "Private customer shopping cart items."
+    },
+    "/users/{userId}/support_tickets/{ticketId}": {
+      "schema": { "$ref": "#/entities/SupportTicket" },
+      "description": "Private user Customer Care tickets and support history."
+    },
+    "/users/{userId}/wallet_transactions/{txId}": {
+      "schema": { "$ref": "#/entities/WalletTransaction" },
+      "description": "Private Green Escrow Wallet passbook transactions."
+    },
+    "/grower_profiles/{growerId}": {
+      "schema": { "$ref": "#/entities/GrowerProfile" },
+      "description": "Public urban grower / farmer storefront profile (no private KYC PII)."
+    },
+    "/grower_kyc/{growerId}": {
+      "schema": { "$ref": "#/entities/GrowerKyc" },
+      "description": "Private grower KYC documents (phone, ID last-4, live camera selfie, farm proof photo) restricted to owner and authorized reviewers."
+    },
+    "/delivery_profiles/{partnerId}": {
+      "schema": { "$ref": "#/entities/DeliveryProfile" },
+      "description": "Private delivery partner KYC, vehicle, and availability profile."
+    },
+    "/products/{productId}": {
+      "schema": { "$ref": "#/entities/Product" },
+      "description": "Published produce catalog with real stock counts."
+    },
+    "/orders/{orderId}": {
+      "schema": { "$ref": "#/entities/Order" },
+      "description": "Customer parent orders containing one or more grower fulfilments."
+    },
+    "/orders/{orderId}/tracking/{trackingDocId}": {
+      "schema": { "$ref": "#/entities/OrderTrackingCurrent" },
+      "description": "Current live delivery partner GPS telemetry document (tracking/current) restricted to order participants and written only by the assigned verified delivery partner."
+    },
+    "/orders/{orderId}/orderEvents/{eventId}": {
+      "schema": { "$ref": "#/entities/OrderTrackingEvent" },
+      "description": "Append-only delivery status milestone events for an order."
+    },
+    "/seller_orders/{sellerOrderId}": {
+      "schema": { "$ref": "#/entities/SellerOrder" },
+      "description": "Per-grower fulfilment orders linked to a parent order."
+    },
+    "/delivery_assignments/{assignmentId}": {
+      "schema": { "$ref": "#/entities/DeliveryAssignment" },
+      "description": "Hyperlocal delivery assignments restricted to verified delivery partners and order participants."
+    },
+    "/settlements/{settlementId}": {
+      "schema": { "$ref": "#/entities/Settlement" },
+      "description": "Grower payout allocation and admin-reconciled settlement ledger."
+    },
+    "/notifications/{notificationId}": {
+      "schema": { "$ref": "#/entities/Notification" },
+      "description": "User-scoped real-time business event notifications."
+    },
+    "/bulk_enquiries/{enquiryId}": {
+      "schema": { "$ref": "#/entities/BulkEnquiry" },
+      "description": "Institutional buyer wholesale enquiries and grower quotations."
+    },
+    "/audit_logs/{logId}": {
+      "schema": { "$ref": "#/entities/AuditLog" },
+      "description": "Append-only operator audit logs."
+    },
+    "/platform_settings/{settingId}": {
+      "schema": { "$ref": "#/entities/PlatformSetting" },
+      "description": "Marketplace pricing and serviceability configuration."
+    }
+  }
+}

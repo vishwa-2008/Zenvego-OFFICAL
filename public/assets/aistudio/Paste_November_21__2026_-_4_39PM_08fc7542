@@ -1,0 +1,1443 @@
+For ZENVEGO, you need more than four separate portals. You need **one connected business operating system** where the customer, grower, farmer, delivery partner, administrator, database, backend, payment gateway, QR system, maps and notifications all communicate correctly.
+
+The most important requirement is this:
+
+**One action in one portal must trigger the correct operation in the backend and update every authorized connected portal.**
+
+For example:
+
+Customer places an order → backend validates stock → payment is processed → order is saved in Firebase → grower receives the order → grower accepts it → delivery assignment is created → delivery partner receives it → QR verifies pickup → delivery is completed → customer receives the update → financial records are updated.
+
+Below is the complete workflow and connection specification to give Google AI Studio.
+
+# **ZENVEGO — Complete connected system workflow**
+
+# **ZENVEGO**
+
+**Integrated Urban Agriculture and Hyperlocal Fresh Produce Marketplace**
+
+Grow Local. Buy Fresh. Deliver Fast.
+
+**Customer Portal**
+
+Discovery, ordering, payment and tracking
+
+**Grower Portal**
+
+Products, harvest, inventory and fulfilment
+
+**Delivery Portal**
+
+Assignments, pickup, navigation and delivery
+
+**Admin Portal**
+
+Verification, operations, payments and control
+
+**Express Backend + Business Logic**
+
+Authentication • Permissions • Orders • Inventory • Payments • QR • Maps • Notifications
+
+**Firebase Platform**
+
+Authentication • Firestore • Storage • Real-time • Cloud Functions
+
+**External Services**
+
+Payment Gateway • Maps Provider • QR Scanner • Push Notifications • Email
+
+# **1. Master prompt for Google AI Studio**
+
+Attach your existing ZENVEGO project, reference HTML files, logo and screenshots. Paste the following into the existing project.
+
+# ZENVEGO — COMPLETE BUSINESS WORKFLOW, SYSTEM ARCHITECTURE AND INTEGRATION SPECIFICATION
+
+## MASTER IMPLEMENTATION INSTRUCTION FOR GOOGLE AI STUDIO
+
+You are responsible for implementing the complete ZENVEGO startup application as a connected, real, full-stack business system.
+
+This document defines the complete business workflow, technical architecture, portal connections, database relationships, APIs, security requirements, external integrations, operational rules and acceptance tests.
+
+You must implement the system described here in the existing project.
+
+This is not a request to create a visual concept.
+
+This is not a request to generate a prototype.
+
+This is not a request to create four disconnected dashboards.
+
+The objective is to build a genuine application that can be configured, tested, deployed and operated for the ZENVEGO business.
+
+Brand: ZENVEGO
+
+Descriptor: Integrated Urban Agriculture and Hyperlocal Fresh Produce Marketplace.
+
+Tagline: Grow Local. Buy Fresh. Deliver Fast.
+
+ZENVEGO connects urban agriculture and local agricultural producers with nearby consumers through a digital marketplace and fulfilment system.
+
+The platform must support:
+
+1. Urban growers.
+2. Terrace gardeners.
+3. Rooftop growers.
+4. Balcony growers.
+5. Home-based producers.
+6. Small and marginal farmers.
+7. Women-led agricultural groups.
+8. Community gardens.
+9. Local agricultural businesses.
+10. Household customers.
+11. Restaurants.
+12. Cafés.
+13. Hostels.
+14. Institutional buyers.
+15. Delivery partners.
+
+The platform has four main operational portals:
+
+A. Customer Portal.\
+B. Grower / Farmer Portal.\
+C. Delivery Partner Portal.\
+D. Admin Portal.
+
+All four portals must communicate through one authoritative backend and database.
+
+Inspect the existing codebase before implementing anything.
+
+The known architecture is React + Vite + Express. Verify the current project.
+
+Use the existing architecture wherever it is technically sound.
+
+Recommended architecture:
+
+FRONTEND:
+
+- React.
+- Vite.
+- TypeScript.
+- React Router.
+- Responsive component system.
+- API service layer.
+- Authentication context.
+- Role-based route guards.
+
+BACKEND:
+
+- Node.js.
+- Express.
+- Firebase Admin SDK.
+- Server-side business logic.
+- Request validation.
+- Authorization middleware.
+- Error handling.
+- Secure logging.
+
+DATABASE:
+
+- Firebase Cloud Firestore.
+
+AUTHENTICATION:
+
+- Firebase Authentication, preserving compatible existing authentication.
+
+STORAGE:
+
+- Firebase Storage.
+
+REAL-TIME:
+
+- Authenticated Firestore subscriptions.
+
+BACKGROUND OPERATIONS:
+
+- Cloud Functions or reliable backend workers for appropriate asynchronous tasks.
+
+PAYMENTS:
+
+- Razorpay or another eligible payment provider.
+
+MAPS:
+
+- Google Maps Platform or a configured equivalent.
+
+QR:
+
+- Real QR generation and camera scanning libraries.
+- Backend-generated secure QR tokens for sensitive operations.
+
+NOTIFICATIONS:
+
+- Firebase Cloud Messaging.
+- In-app notifications.
+- Email notifications where configured.
+
+Do not introduce unnecessary technologies.
+
+Do not create two competing databases.
+
+Do not replace the existing project unnecessarily.
+
+All connections must follow this structure:
+
+CUSTOMER PORTAL\
+|\
+GROWER PORTAL\
+|\
+DELIVERY PORTAL\
+|\
+ADMIN PORTAL\
+|\
+V\
+SHARED FRONTEND API CLIENT\
+|\
+V\
+EXPRESS BACKEND\
+|\
++-- Authentication verification\
+|\
++-- Role authorization\
+|\
++-- Product service\
+|\
++-- Inventory service\
+|\
++-- Cart service\
+|\
++-- Order service\
+|\
++-- Payment service\
+|\
++-- QR verification service\
+|\
++-- Delivery service\
+|\
++-- Location service\
+|\
++-- Notification service\
+|\
++-- Administration service\
+|\
+V\
+FIREBASE ADMIN SDK\
+|\
+V\
+CLOUD FIRESTORE\
+|\
++-- Users\
++-- Customer profiles\
++-- Grower profiles\
++-- Delivery profiles\
++-- Products\
++-- Inventory\
++-- Orders\
++-- Seller orders\
++-- Delivery assignments\
++-- Payments\
++-- QR tokens\
++-- Notifications\
++-- Settlements\
++-- Audit logs
+
+EXTERNAL CONNECTIONS:
+
+Express Backend <--> Payment Gateway\
+Express Backend <--> Maps / Geocoding Provider\
+Express Backend <--> Firebase Cloud Messaging\
+Express Backend <--> Email Provider
+
+Frontend <--> Firebase Authentication\
+Frontend <--> Express Backend\
+Frontend <--> Authorized Firestore real-time listeners\
+Frontend <--> Maps SDK\
+Frontend <--> QR Camera Scanner
+
+IMPORTANT:
+
+Sensitive business operations must pass through the backend.
+
+The frontend must never independently decide:
+
+- Whether an order is paid.
+- Whether stock is available.
+- Whether a grower is verified.
+- Whether a delivery is completed.
+- Whether a QR token is valid.
+- Whether a refund is approved.
+- Whether a user has administrator permissions.
+
+Create the database schema before implementing workflows.
+
+Required logical collections:
+
+users\
+customer_profiles\
+grower_profiles\
+delivery_profiles\
+admin_profiles\
+addresses\
+products\
+categories\
+inventory\
+harvest_batches\
+carts\
+orders\
+seller_orders\
+order_items\
+delivery_assignments\
+payments\
+payment_events\
+refunds\
+qr_tokens\
+reviews\
+notifications\
+bulk_enquiries\
+bulk_quotes\
+settlements\
+service_areas\
+support_tickets\
+platform_settings\
+audit_logs
+
+Every collection must have:
+
+- Document ID.
+- Required fields.
+- Field types.
+- Ownership.
+- Permissions.
+- Validation.
+- Creation timestamp.
+- Updated timestamp.
+- Relevant status fields.
+- Required indexes.
+
+Use server-generated timestamps.
+
+Use transactions or atomic operations where consistency is required.
+
+Use references or stable IDs to connect records.
+
+Do not duplicate sensitive information unnecessarily.
+
+Do not store payment secret credentials in Firestore.
+
+Do not store passwords in plaintext.
+
+Do not store a client-supplied price as the authoritative order price.
+
+No fixed sample products, sales, orders, customers, stock or earnings in production.
+
+CUSTOMER REGISTRATION:
+
+1. Customer opens ZENVEGO.
+2. Customer selects customer account.
+3. Customer registers.
+4. Authentication provider verifies the identity.
+5. Backend creates or validates the user profile.
+6. Customer completes required profile fields.
+7. Customer adds delivery address.
+8. Customer selects location.
+9. Customer can access the marketplace.
+
+GROWER REGISTRATION:
+
+1. User selects grower registration.
+2. Account is authenticated.
+3. Grower enters personal details.
+4. Grower enters farm, terrace or growing information.
+5. Grower adds location.
+6. Grower uploads required documents.
+7. Application is submitted.
+8. Backend stores application.
+9. Admin receives notification.
+10. Admin reviews the application.
+11. Admin approves, rejects or requests corrections.
+12. Backend updates verification status.
+13. Approved grower receives access to publishing and selling functionality.
+
+A grower must not publish restricted listings before required approval.
+
+DELIVERY PARTNER REGISTRATION:
+
+1. User selects delivery registration.
+2. Account is authenticated.
+3. Delivery partner submits required details.
+4. Required verification documents are uploaded.
+5. Admin reviews the application.
+6. Approval status is recorded.
+7. Approved delivery partner can activate availability.
+8. Delivery partner can receive eligible assignments.
+
+ADMIN REGISTRATION:
+
+Administrator creation must be a trusted, restricted process.
+
+Never provide a public admin registration option.
+
+Never trust a role value supplied by the frontend.
+
+CUSTOMER HOME:
+
+Display real information:
+
+- Available products.
+- Product categories.
+- Nearby growers.
+- Available seasonal produce.
+- Relevant offers when genuinely configured.
+- Search.
+- Location selection.
+- Order history.
+
+PRODUCT DISCOVERY:
+
+1. Customer selects location.
+2. Backend validates serviceability.
+3. Customer searches products.
+4. Backend retrieves published products.
+5. Product availability is calculated from inventory.
+6. Customer opens product details.
+7. Customer sees actual grower and product information.
+8. Customer selects quantity.
+
+PRODUCT DETAIL:
+
+Display:
+
+- Product image.
+- Product name.
+- Description.
+- Unit.
+- Price.
+- Actual available quantity.
+- Grower identity.
+- Harvest information where provided.
+- Delivery availability.
+- Verified claims only.
+- Reviews from eligible orders.
+
+CART:
+
+1. Customer adds a product.
+2. Backend or authorized cart service saves the cart.
+3. Quantity changes are validated.
+4. Removed products are removed.
+5. Cart totals are recalculated.
+6. Product availability is checked again before checkout.
+
+MULTI-GROWER CART:
+
+One cart can contain products from different growers.
+
+Create:
+
+- One customer-facing parent order.
+- Separate seller fulfilment orders.
+- Separate order items for each seller.
+- Correct allocation of item values and applicable charges.
+
+A grower must only see their own fulfilment order.
+
+This is the most important business workflow.
+
+Implement the following exact process.
+
+1. Customer clicks checkout.
+2. Frontend sends cart and address identifiers to backend.
+3. Backend verifies customer identity.
+4. Backend loads actual cart records.
+5. Backend retrieves current product records.
+6. Backend checks listing status.
+7. Backend checks grower eligibility.
+8. Backend checks serviceability.
+9. Backend checks actual stock.
+10. Backend recalculates every product price.
+11. Backend calculates delivery charges.
+12. Backend calculates applicable taxes and other configured charges.
+13. Backend creates a unique idempotent checkout operation.
+14. Backend reserves stock using a transaction.
+15. Backend creates the parent order and seller fulfilment records.
+16. Backend creates the payment order if online payment is selected.
+17. Frontend opens the actual payment provider checkout.
+18. Customer completes or cancels payment.
+19. Backend verifies payment signature and webhook evidence.
+20. Backend updates payment records.
+21. Backend confirms the order only after the correct payment or permitted payment condition.
+22. Backend commits the stock reservation.
+23. Backend notifies relevant growers.
+24. Customer sees the actual order confirmation.
+
+If payment fails:
+
+- Do not mark order paid.
+- Do not falsely show confirmed payment.
+- Apply the defined stock reservation expiry and release process.
+- Preserve the payment attempt record.
+
+If the customer submits twice:
+
+- Do not create duplicate orders.
+- Use idempotency.
+
+If stock is unavailable:
+
+- Reject checkout clearly.
+- Do not create an invalid paid order.
+- Recalculate the cart.
+
+If multiple customers compete for the last item:
+
+- Prevent negative stock.
+- Prevent overselling.
+- Use transaction-safe reservation logic.
+
+After order confirmation:
+
+1. Seller fulfilment record is created.
+2. Correct grower receives notification.
+3. Grower opens order.
+4. Grower sees only their own items.
+5. Grower reviews quantity and fulfilment details.
+6. Grower accepts or rejects within the allowed time.
+7. Rejection requires a reason.
+8. Acceptance updates the seller order.
+9. Customer receives the appropriate update.
+10. Grower prepares the produce.
+11. Grower marks order ready for pickup.
+12. Delivery assignment is created according to operational rules.
+13. Grower hands over the order.
+14. Pickup is verified.
+15. Seller order moves to the correct next state.
+
+If a parent order contains multiple sellers:
+
+- Each seller order has an independent fulfilment lifecycle.
+- Customer can see each seller's progress.
+- Parent order status is derived from its child fulfilment records.
+- Partial cancellation and refunds must be handled correctly.
+
+Delivery assignment must use actual operational information.
+
+Assignment eligibility should consider:
+
+- Partner verification.
+- Availability.
+- Service area.
+- Assignment capacity.
+- Current workload.
+- Pickup and delivery locations.
+- Relevant operational constraints.
+
+Do not assign delivery to a fake partner.
+
+Workflow:
+
+1. Seller order becomes ready for pickup.
+2. Backend identifies eligible delivery partners.
+3. Assignment is created according to the configured dispatch method.
+4. Delivery partner receives a notification.
+5. Partner opens assignment.
+6. Partner sees authorized pickup information.
+7. Partner accepts or rejects.
+8. Backend validates the assignment.
+9. Accepted assignment becomes active.
+10. Seller and customer see the relevant status.
+
+If the partner rejects:
+
+- Record the reason.
+- Reassign according to dispatch rules.
+- Do not lose the original assignment history.
+
+If no eligible delivery partner exists:
+
+- Show an operational exception.
+- Notify authorized operations staff.
+- Do not fabricate a successful assignment.
+
+Implement real QR functionality.
+
+QR TYPE 1 — GROWER STORE QR:
+
+1. Approved grower has a public storefront.
+2. Backend supplies a safe public storefront URL.
+3. QR library generates the code.
+4. Grower can view, download and print it.
+5. Customer scans it.
+6. Customer opens the correct grower storefront.
+
+QR TYPE 2 — PRODUCT QR:
+
+1. Grower opens an authorized product.
+2. Backend supplies the safe public product URL.
+3. QR code is generated.
+4. Customer scans.
+5. Actual product detail page opens.
+6. Product availability is retrieved from the backend.
+
+QR TYPE 3 — PICKUP VERIFICATION QR:
+
+1. Backend generates a cryptographically unpredictable, single-use token.
+2. Token is linked to an authorized order and action.
+3. Token has an expiry.
+4. QR is generated from a safe verification URL or token payload.
+5. Delivery partner scans the QR.
+6. Scanner submits token to backend.
+7. Backend validates token, user, order, assignment, expiry and status.
+8. Backend records pickup.
+9. Token is consumed or invalidated.
+10. Authorized portals receive an update.
+
+QR TYPE 4 — DELIVERY VERIFICATION QR:
+
+1. Backend generates an authorized delivery verification token.
+2. QR is displayed to the appropriate authorized party.
+3. Delivery partner scans.
+4. Backend validates order, partner, token and state.
+5. Delivery confirmation is recorded.
+6. Customer receives delivery update.
+7. The token cannot be reused.
+
+Implement:
+
+- QR generation.
+- QR download as PNG.
+- SVG support where available.
+- Print layout.
+- Camera scanning.
+- Camera permission handling.
+- Manual verification fallback where appropriate.
+- Expired token rejection.
+- Reused token rejection.
+- Invalid QR handling.
+- Offline/network failure handling.
+
+Never encode payment secrets, passwords or private customer details in a QR code.
+
+Never update order status based solely on the frontend scanner.
+
+Use a real configured map provider.
+
+CUSTOMER:
+
+- Select location.
+- Search address.
+- Use browser geolocation after permission.
+- Select a map point.
+- Save delivery address.
+- Check serviceability.
+
+GROWER:
+
+- Save actual business location.
+- Update location with authorization.
+- View relevant pickup information.
+
+DELIVERY PARTNER:
+
+- View assigned pickup point.
+- View authorized delivery destination.
+- Open navigation.
+- Share location only during an appropriate active delivery workflow and with permission.
+- Stop location sharing when it is no longer required.
+
+ADMIN:
+
+- View authorized operational locations.
+- Manage service areas.
+
+Implement:
+
+- Geocoding.
+- Reverse geocoding where supported.
+- Map markers.
+- Address validation.
+- Route navigation.
+- Distance calculation through an actual provider.
+- Location permission handling.
+- GPS unavailable handling.
+- Provider error handling.
+
+Never invent coordinates or display a static image as a functioning map.
+
+Do not track users unnecessarily.
+
+1. Delivery partner reaches pickup location.
+2. Partner completes authorized pickup verification.
+3. Backend changes delivery status.
+4. Customer sees pickup/out-for-delivery progress.
+5. Partner navigates to customer.
+6. Partner reaches destination.
+7. Required delivery verification is performed.
+8. Backend checks order and assignment.
+9. Delivery is recorded as completed.
+10. Completion timestamp is saved.
+11. Relevant QR token or OTP is consumed.
+12. Customer receives notification.
+13. Grower receives fulfilment update.
+14. Delivery history is updated.
+15. Settlement records are updated according to financial policy.
+
+If delivery fails:
+
+- Partner selects a valid reason.
+- Backend records the event.
+- Admin or operations workflow handles the exception.
+- Order is not falsely marked delivered.
+
+Use a real eligible payment provider.
+
+For Razorpay, implement the official server-side integration using current provider documentation.
+
+Payment workflow:
+
+Customer checkout\
+|\
+Backend validates order\
+|\
+Backend creates payment order\
+|\
+Provider checkout\
+|\
+Customer payment\
+|\
+Provider response\
+|\
+Backend signature verification\
+|\
+Verified webhook\
+|\
+Payment ledger update\
+|\
+Order confirmation\
+|\
+Seller fulfilment\
+|\
+Settlement eligibility
+
+Implement:
+
+- Payment initiation.
+- Payment verification.
+- Webhook signature verification.
+- Duplicate event protection.
+- Idempotency.
+- Failed payments.
+- Cancelled payments.
+- Refund requests.
+- Refund status.
+- Transaction history.
+- Settlement records.
+- Reconciliation.
+
+Never trust frontend payment status.
+
+Never mark a payment successful from a browser redirect alone.
+
+For a multi-grower marketplace, design the financial ledger and seller allocations.
+
+Do not assume automatic split payouts are available under an ordinary merchant account.
+
+If the payment provider does not support the required marketplace settlement arrangement for the configured account:
+
+- Record seller payable amounts correctly.
+- Implement an authorized settlement review process.
+- Use a supported settlement method.
+- Clearly disclose the limitation.
+
+Do not invent escrow functionality.
+
+Use real authenticated subscriptions and server-side events.
+
+Define business events such as:
+
+USER_REGISTERED\
+GROWER_APPLICATION_SUBMITTED\
+GROWER_APPROVED\
+PRODUCT_PUBLISHED\
+INVENTORY_UPDATED\
+ORDER_CREATED\
+PAYMENT_VERIFIED\
+ORDER_CONFIRMED\
+SELLER_ORDER_ACCEPTED\
+SELLER_ORDER_REJECTED\
+ORDER_READY_FOR_PICKUP\
+DELIVERY_ASSIGNED\
+DELIVERY_ACCEPTED\
+PICKUP_VERIFIED\
+OUT_FOR_DELIVERY\
+DELIVERY_COMPLETED\
+ORDER_CANCELLED\
+REFUND_CREATED\
+REFUND_UPDATED\
+SETTLEMENT_UPDATED
+
+Each event must have:
+
+- Unique event ID.
+- Event type.
+- Related record ID.
+- Server timestamp.
+- Authorized recipients.
+- Processing status.
+- Idempotency protection where appropriate.
+
+Real-time subscribers must only receive information they are authorized to see.
+
+Do not create a fake green live indicator.
+
+CUSTOMER:
+
+- Order confirmation.
+- Payment result.
+- Seller acceptance.
+- Preparation.
+- Pickup.
+- Delivery.
+- Cancellation.
+- Refund.
+
+GROWER:
+
+- New order.
+- Order cancellation.
+- Inventory warning.
+- Verification status.
+- Settlement update.
+
+DELIVERY PARTNER:
+
+- Assignment.
+- Assignment change.
+- Pickup.
+- Delivery status.
+- Operational issue.
+
+ADMIN:
+
+- New applications.
+- New orders.
+- Failed payments.
+- Delivery exceptions.
+- Support requests.
+- Reported listings.
+
+Use in-app notifications and Firebase Cloud Messaging where configured.
+
+Email notifications may be sent through the configured provider.
+
+Store notification records.
+
+Track read/unread state.
+
+Do not claim a notification was delivered unless the provider confirms the relevant delivery outcome.
+
+ADMIN DASHBOARD:
+
+Show actual database-derived values:
+
+- Total users.
+- Active customers.
+- Approved growers.
+- Pending growers.
+- Verified delivery partners.
+- Active orders.
+- Completed orders.
+- Cancelled orders.
+- Actual payment totals.
+- Operational exceptions.
+
+USER MANAGEMENT:
+
+- Search.
+- View.
+- Suspend.
+- Reactivate.
+- Authorized role management.
+- Audit history.
+
+GROWER MANAGEMENT:
+
+- Review applications.
+- Review documents.
+- Approve.
+- Reject.
+- Request corrections.
+- Track verification history.
+
+PRODUCT MANAGEMENT:
+
+- Review listings.
+- Moderate listings.
+- Manage categories.
+- Handle reports.
+
+ORDER MANAGEMENT:
+
+- View parent orders.
+- View seller fulfilment orders.
+- Monitor delivery.
+- Review cancellation.
+- Resolve operational issues.
+
+PAYMENT MANAGEMENT:
+
+- View payments.
+- Verify events.
+- Review refunds.
+- Review settlements.
+- Reconcile records.
+
+PLATFORM SETTINGS:
+
+- Service areas.
+- Delivery rules.
+- Configurable fees.
+- Product categories.
+- Operational settings.
+
+All privileged operations require server-side authorization and audit logs.
+
+Support restaurants, cafés, hostels and other institutional buyers.
+
+1. Buyer registers.
+2. Buyer creates an institutional profile.
+3. Buyer submits product requirements.
+4. Buyer specifies quantities and delivery requirements.
+5. Relevant growers or authorized staff review the enquiry.
+6. Grower submits a quotation.
+7. Buyer reviews quotation.
+8. Buyer accepts or rejects.
+9. An agreed order is created.
+10. Fulfilment follows the regular seller and delivery workflow.
+
+Do not force every institutional transaction into an ordinary household checkout if quotation-based purchasing is required.
+
+Implement these relationships using stable IDs:
+
+USER\
+|\
++-- CUSTOMER_PROFILE\
+\|      |\
+\|      +-- ADDRESSES\
+\|      +-- CART\
+\|      +-- ORDERS\
+|\
++-- GROWER_PROFILE\
+\|      |\
+\|      +-- PRODUCTS\
+\|      +-- INVENTORY\
+\|      +-- HARVEST_BATCHES\
+\|      +-- SELLER_ORDERS\
+\|      +-- SETTLEMENTS\
+|\
++-- DELIVERY_PROFILE\
+|\
++-- DELIVERY_ASSIGNMENTS\
++-- DELIVERY_HISTORY
+
+PARENT_ORDER\
+|\
++-- ORDER_ITEMS\
+|\
++-- SELLER_ORDERS\
+|\
++-- DELIVERY_ASSIGNMENTS\
+|\
++-- PAYMENT ALLOCATION\
+|\
++-- FULFILMENT EVENTS
+
+PAYMENT\
+|\
++-- PAYMENT_EVENTS\
+|\
++-- REFUNDS\
+|\
++-- SETTLEMENT ALLOCATIONS
+
+QR_TOKEN\
+|\
++-- ORDER_ID\
++-- ACTION\
++-- EXPIRY\
++-- CONSUMPTION STATUS
+
+Do not assume Firestore supports relational joins.
+
+Design queries and denormalized snapshots deliberately.
+
+Keep authoritative values consistent through transactions and trusted server operations.
+
+Implement real API endpoints.
+
+AUTH:\
+POST /api/auth/profile\
+GET /api/auth/me
+
+CUSTOMERS:\
+GET /api/customers/profile\
+PATCH /api/customers/profile\
+POST /api/customers/addresses\
+GET /api/customers/addresses
+
+GROWERS:\
+POST /api/growers/applications\
+GET /api/growers/profile\
+PATCH /api/growers/profile\
+GET /api/growers/orders
+
+PRODUCTS:\
+GET /api/products\
+GET /api/products/:productId\
+POST /api/products\
+PATCH /api/products/:productId\
+DELETE /api/products/:productId
+
+INVENTORY:\
+GET /api/inventory\
+PATCH /api/inventory/:productId\
+POST /api/inventory/reservations
+
+CART:\
+GET /api/cart\
+POST /api/cart/items\
+PATCH /api/cart/items/:itemId\
+DELETE /api/cart/items/:itemId
+
+CHECKOUT:\
+POST /api/checkout\
+GET /api/checkout/:checkoutId
+
+ORDERS:\
+POST /api/orders\
+GET /api/orders\
+GET /api/orders/:orderId\
+POST /api/orders/:orderId/cancel
+
+GROWER FULFILMENT:\
+POST /api/seller-orders/:sellerOrderId/accept\
+POST /api/seller-orders/:sellerOrderId/reject\
+POST /api/seller-orders/:sellerOrderId/ready
+
+DELIVERY:\
+POST /api/delivery/assignments\
+POST /api/delivery/assignments/:assignmentId/accept\
+POST /api/delivery/assignments/:assignmentId/reject\
+POST /api/delivery/assignments/:assignmentId/pickup\
+POST /api/delivery/assignments/:assignmentId/complete\
+POST /api/delivery/assignments/:assignmentId/issue
+
+QR:\
+POST /api/qr/generate\
+POST /api/qr/verify\
+POST /api/qr/consume
+
+PAYMENTS:\
+POST /api/payments/create\
+POST /api/payments/verify\
+POST /api/webhooks/payment\
+POST /api/refunds\
+GET /api/payments/:paymentId
+
+MAPS:\
+POST /api/maps/geocode\
+POST /api/maps/serviceability\
+POST /api/maps/route
+
+NOTIFICATIONS:\
+GET /api/notifications\
+POST /api/notifications/:notificationId/read
+
+ADMIN:\
+GET /api/admin/dashboard\
+GET /api/admin/growers\
+POST /api/admin/growers/:growerId/approve\
+POST /api/admin/growers/:growerId/reject\
+GET /api/admin/orders\
+GET /api/admin/payments\
+GET /api/admin/audit-logs
+
+These are proposed API contracts. Adjust endpoint details to the existing application where necessary, but implement equivalent complete functionality.
+
+Every endpoint must:
+
+- Validate input.
+- Verify authentication.
+- Verify permissions.
+- Validate ownership.
+- Handle errors.
+- Return correct HTTP status codes.
+- Avoid fake success responses.
+
+Implement:
+
+- Server-side Firebase token verification.
+- Firestore Security Rules.
+- Storage Security Rules.
+- Role authorization.
+- Ownership checks.
+- Rate limiting.
+- Input validation.
+- Secure file upload.
+- Payment webhook signature verification.
+- Audit logging.
+- Secret management.
+- Least privilege.
+
+Do not expose private customer information to unrelated users.
+
+Do not publicly expose identity documents.
+
+Do not expose privileged service credentials.
+
+Use HTTPS in production.
+
+Collect location only with appropriate permission and operational justification.
+
+Every major workflow needs:
+
+- Loading state.
+- Success state.
+- Validation state.
+- Failure state.
+- Retry strategy.
+- Network recovery.
+- Duplicate submission prevention.
+
+Examples:
+
+Firebase unavailable:\
+Show database connection error and stop operations that require persistence.
+
+Payment provider unavailable:\
+Do not create a fake successful payment.
+
+Map API unavailable:\
+Show a proper map configuration or service error.
+
+QR camera denied:\
+Provide an appropriate fallback when allowed.
+
+Stock conflict:\
+Inform customer and refresh the cart.
+
+Delivery partner unavailable:\
+Create an operational exception.
+
+Realtime connection lost:\
+Show connection status and safely resubscribe.
+
+Create automated tests and execute them.
+
+TEST A — DATABASE:
+
+- Connect to Firebase.
+- Read actual records.
+- Write a test record in an isolated environment.
+- Verify the record.
+- Delete the test record where appropriate.
+- Confirm permission enforcement.
+
+TEST B — CUSTOMER:
+
+- Register.
+- Sign in.
+- Browse real products.
+- Add to cart.
+- Checkout.
+- Verify order persistence.
+
+TEST C — GROWER:
+
+- Submit application.
+- Admin approves.
+- Create product.
+- Update stock.
+- Receive order.
+- Accept order.
+- Prepare order.
+
+TEST D — DELIVERY:
+
+- Receive assignment.
+- Accept assignment.
+- Scan pickup QR.
+- Verify pickup.
+- Navigate.
+- Complete delivery.
+- Verify final order status.
+
+TEST E — PAYMENT:
+
+- Create test payment.
+- Verify provider response.
+- Verify webhook.
+- Reject invalid signature.
+- Reject duplicate webhook processing.
+- Test payment failure.
+- Test refund workflow.
+
+TEST F — QR:
+
+- Generate store QR.
+- Generate product QR.
+- Generate pickup QR.
+- Generate delivery QR.
+- Scan with a supported mobile camera.
+- Reject expired tokens.
+- Reject reused tokens.
+- Reject unauthorized users.
+
+TEST G — MAP:
+
+- Test geocoding.
+- Test address selection.
+- Test location permission.
+- Test serviceability.
+- Test route display.
+- Test missing API credentials.
+
+TEST H — SECURITY:
+
+- Customer tries to read another customer record.
+- Grower tries to modify another grower's product.
+- Delivery partner tries to access an unrelated assignment.
+- Customer tries to call admin endpoint.
+- All unauthorized attempts must be rejected.
+
+TEST I — REAL-TIME:
+
+- Update order status in backend.
+- Confirm authorized customer sees the update.
+- Confirm grower sees only relevant updates.
+- Confirm delivery partner sees only assigned updates.
+
+TEST J — MOBILE:\
+Test 360px, 375px, 390px and 430px screen widths, as well as tablet and desktop.
+
+Test actual interactions, not just CSS.
+
+Implement in this exact sequence:
+
+1. Inspect and diagnose the current application.
+2. Repair existing project configuration.
+3. Repair backend startup.
+4. Establish Firebase connectivity.
+5. Implement database schema and rules.
+6. Implement authentication and authorization.
+7. Implement customer profile and addresses.
+8. Implement grower onboarding and verification.
+9. Implement product and inventory management.
+10. Implement customer marketplace and cart.
+11. Implement checkout and order transactions.
+12. Implement grower order fulfilment.
+13. Implement delivery assignment.
+14. Implement QR generation and verification.
+15. Implement maps and location.
+16. Implement payment processing.
+17. Implement real-time updates.
+18. Implement notifications.
+19. Implement admin portal.
+20. Implement institutional purchasing.
+21. Repair mobile layouts.
+22. Run automated tests.
+23. Run end-to-end workflows.
+24. Fix all critical failures.
+25. Prepare production deployment.
+
+Do not build more screens while the database connection is broken.
+
+Do not continue order development while inventory transactions are unsafe.
+
+Do not claim delivery works before pickup and completion have been verified.
+
+At the end, report the status of every item:
+
+1. Frontend.
+2. Backend.
+3. Firebase Authentication.
+4. Firestore.
+5. Firebase Storage.
+6. Security Rules.
+7. Customer workflow.
+8. Grower workflow.
+9. Delivery workflow.
+10. Admin workflow.
+11. Order processing.
+12. Inventory consistency.
+13. QR generation.
+14. QR scanning.
+15. QR verification.
+16. Maps.
+17. Location.
+18. Payment gateway.
+19. Webhooks.
+20. Real-time updates.
+21. Notifications.
+22. Mobile responsiveness.
+23. Automated tests.
+24. Deployment.
+
+For each item report:\
+PASS / FAIL / BLOCKED.
+
+Provide:
+
+- Actual test performed.
+- Actual result.
+- Relevant file or endpoint.
+- Remaining issue.
+- Required external configuration.
+
+Never mark a feature as PASS merely because its code was generated.
+
+Never report an untested integration as working.
+
+Never insert fake business data.
+
+Never replace a failed operation with a simulated success message.
+
+FINAL OBJECTIVE:
+
+Implement ZENVEGO as one connected business system in which all portals, backend services, database records, payments, QR operations, maps, inventory, order fulfilment and notifications work together.
+
+Preserve the original ZENVEGO visual identity and existing working code.
+
+Modify the real project. Execute the implementation. Test the connections. Fix the failures. Report evidence.
+
+ZENVEGO — Grow Local. Buy Fresh. Deliver Fast.
+
+# **2. Complete business workflow diagrams**
+
+These diagrams explain how the system should behave. Give them to AI Studio along with the master prompt if it supports Mermaid previews.
+
+## **A. Overall order-to-delivery workflow**
+
+\#chatgpt-mermaid-\_r_376\_{font-family:-apple-system-body,ui-sans-serif,-apple-system,system-ui,"Segoe UI",Helvetica,"Apple Color Emoji",Arial,sans-serif,"Segoe UI Emoji","Segoe UI Symbol";font-size:16px;fill:rgb(237, 237, 237);}@keyframes edge-animation-frame{from{stroke-dashoffset:0;}}@keyframes dash{to{stroke-dashoffset:0;}}#chatgpt-mermaid-\_r_376\_ .edge-animation-slow{stroke-dasharray:9,5!important;stroke-dashoffset:900;animation:dash 50s linear infinite;stroke-linecap:round;}#chatgpt-mermaid-\_r_376\_ .edge-animation-fast{stroke-dasharray:9,5!important;stroke-dashoffset:900;animation:dash 20s linear infinite;stroke-linecap:round;}#chatgpt-mermaid-\_r_376\_ .error-icon{fill:rgb(48, 48, 48);}#chatgpt-mermaid-\_r_376\_ .error-text{fill:rgb(237, 237, 237);stroke:rgb(237, 237, 237);}#chatgpt-mermaid-\_r_376\_ .edge-thickness-normal{stroke-width:1px;}#chatgpt-mermaid-\_r_376\_ .edge-thickness-thick{stroke-width:3.5px;}#chatgpt-mermaid-\_r_376\_ .edge-pattern-solid{stroke-dasharray:0;}#chatgpt-mermaid-\_r_376\_ .edge-thickness-invisible{stroke-width:0;fill:none;}#chatgpt-mermaid-\_r_376\_ .edge-pattern-dashed{stroke-dasharray:3;}#chatgpt-mermaid-\_r_376\_ .edge-pattern-dotted{stroke-dasharray:2;}#chatgpt-mermaid-\_r_376\_ .marker{fill:rgb(175, 175, 175);stroke:rgb(175, 175, 175);}#chatgpt-mermaid-\_r_376\_ .marker.cross{stroke:rgb(175, 175, 175);}#chatgpt-mermaid-\_r_376\_ svg{font-family:-apple-system-body,ui-sans-serif,-apple-system,system-ui,"Segoe UI",Helvetica,"Apple Color Emoji",Arial,sans-serif,"Segoe UI Emoji","Segoe UI Symbol";font-size:16px;}#chatgpt-mermaid-\_r_376\_ p{margin:0;}#chatgpt-mermaid-\_r_376\_ .label{font-family:-apple-system-body,ui-sans-serif,-apple-system,system-ui,"Segoe UI",Helvetica,"Apple Color Emoji",Arial,sans-serif,"Segoe UI Emoji","Segoe UI Symbol";color:rgb(237, 237, 237);}#chatgpt-mermaid-\_r_376\_ .cluster-label text{fill:rgb(237, 237, 237);}#chatgpt-mermaid-\_r_376\_ .cluster-label span{color:rgb(237, 237, 237);}#chatgpt-mermaid-\_r_376\_ .cluster-label span p{background-color:transparent;}#chatgpt-mermaid-\_r_376\_ .label text,#chatgpt-mermaid-\_r_376\_ span{fill:rgb(237, 237, 237);color:rgb(237, 237, 237);}#chatgpt-mermaid-\_r_376\_ .node rect,#chatgpt-mermaid-\_r_376\_ .node circle,#chatgpt-mermaid-\_r_376\_ .node ellipse,#chatgpt-mermaid-\_r_376\_ .node polygon,#chatgpt-mermaid-\_r_376\_ .node path{fill:rgb(9, 23, 44);stroke:rgb(31, 78, 148);stroke-width:1px;}#chatgpt-mermaid-\_r_376\_ .rough-node .label text,#chatgpt-mermaid-\_r_376\_ .node .label text,#chatgpt-mermaid-\_r_376\_ .image-shape .label,#chatgpt-mermaid-\_r_376\_ .icon-shape .label{text-anchor:middle;}#chatgpt-mermaid-\_r_376\_ .node .katex path{fill:#000;stroke:#000;stroke-width:1px;}#chatgpt-mermaid-\_r_376\_ .rough-node .label,#chatgpt-mermaid-\_r_376\_ .node .label,#chatgpt-mermaid-\_r_376\_ .image-shape .label,#chatgpt-mermaid-\_r_376\_ .icon-shape .label{text-align:center;}#chatgpt-mermaid-\_r_376\_ .node.clickable{cursor:pointer;}#chatgpt-mermaid-\_r_376\_ .root .anchor path{fill:rgb(175, 175, 175)!important;stroke-width:0;stroke:rgb(175, 175, 175);}#chatgpt-mermaid-\_r_376\_ .arrowheadPath{fill:rgb(175, 175, 175);}#chatgpt-mermaid-\_r_376\_ .edgePath .path{stroke:rgb(175, 175, 175);stroke-width:1px;}#chatgpt-mermaid-\_r_376\_ .flowchart-link{stroke:rgb(175, 175, 175);fill:none;}#chatgpt-mermaid-\_r_376\_ .edgeLabel{background-color:rgb(0, 0, 0);text-align:center;}#chatgpt-mermaid-\_r_376\_ .edgeLabel p{background-color:rgb(0, 0, 0);}#chatgpt-mermaid-\_r_376\_ .edgeLabel rect{opacity:0.5;background-color:rgb(0, 0, 0);fill:rgb(0, 0, 0);}#chatgpt-mermaid-\_r_376\_ .labelBkg{background-color:rgba(0, 0, 0, 0.5);}#chatgpt-mermaid-\_r_376\_ .cluster rect{fill:rgb(48, 48, 48);stroke:rgba(255, 255, 255, 0.15);stroke-width:1px;}#chatgpt-mermaid-\_r_376\_ .cluster text{fill:rgb(237, 237, 237);}#chatgpt-mermaid-\_r_376\_ .cluster span{color:rgb(237, 237, 237);}#chatgpt-mermaid-\_r_376\_ div.mermaidTooltip{position:absolute;text-align:center;max-width:200px;padding:2px;font-family:-apple-system-body,ui-sans-serif,-apple-system,system-ui,"Segoe UI",Helvetica,"Apple Color Emoji",Arial,sans-serif,"Segoe UI Emoji","Segoe UI Symbol";font-size:12px;background:rgb(48, 48, 48);border:1px solid rgba(255, 255, 255, 0.15);border-radius:2px;pointer-events:none;z-index:100;}#chatgpt-mermaid-\_r_376\_ .flowchartTitleText{text-anchor:middle;font-size:18px;fill:rgb(237, 237, 237);}#chatgpt-mermaid-\_r_376\_ rect.text{fill:none;stroke-width:0;}#chatgpt-mermaid-\_r_376\_ .icon-shape,#chatgpt-mermaid-\_r_376\_ .image-shape{background-color:rgb(0, 0, 0);text-align:center;}#chatgpt-mermaid-\_r_376\_ .icon-shape p,#chatgpt-mermaid-\_r_376\_ .image-shape p{background-color:rgb(0, 0, 0);padding:2px;}#chatgpt-mermaid-\_r_376\_ .icon-shape .label rect,#chatgpt-mermaid-\_r_376\_ .image-shape .label rect{opacity:0.5;background-color:rgb(0, 0, 0);fill:rgb(0, 0, 0);}#chatgpt-mermaid-\_r_376\_ .label-icon{display:inline-block;height:1em;overflow:visible;vertical-align:-0.125em;}#chatgpt-mermaid-\_r_376\_ .node .label-icon path{fill:currentColor;stroke:revert;stroke-width:revert;}#chatgpt-mermaid-\_r_376\_ .node .neo-node{stroke:rgb(31, 78, 148);}#chatgpt-mermaid-\_r_376\_ [data-look="neo"].node rect,#chatgpt-mermaid-\_r_376\_ [data-look="neo"].cluster rect,#chatgpt-mermaid-\_r_376\_ [data-look="neo"].node polygon{stroke:url(#chatgpt-mermaid-\_r_376\_-gradient);filter:drop-shadow( 1px 2px 2px rgba(185,185,185,1));}#chatgpt-mermaid-\_r_376\_ [data-look="neo"].swimlane.cluster rect{filter:none;}#chatgpt-mermaid-\_r_376\_ [data-look="neo"].node path{stroke:url(#chatgpt-mermaid-\_r_376\_-gradient);stroke-width:1px;}#chatgpt-mermaid-\_r_376\_ [data-look="neo"].node .outer-path{filter:drop-shadow( 1px 2px 2px rgba(185,185,185,1));}#chatgpt-mermaid-\_r_376\_ [data-look="neo"].node .neo-line path{stroke:rgb(31, 78, 148);filter:none;}#chatgpt-mermaid-\_r_376\_ [data-look="neo"].node circle{stroke:url(#chatgpt-mermaid-\_r_376\_-gradient);filter:drop-shadow( 1px 2px 2px rgba(185,185,185,1));}#chatgpt-mermaid-\_r_376\_ [data-look="neo"].node circle .state-start{fill:#000000;}#chatgpt-mermaid-\_r_376\_ [data-look="neo"].icon-shape .icon{fill:url(#chatgpt-mermaid-\_r_376\_-gradient);filter:drop-shadow( 1px 2px 2px rgba(185,185,185,1));}#chatgpt-mermaid-\_r_376\_ [data-look="neo"].icon-shape .icon-neo path{stroke:url(#chatgpt-mermaid-\_r_376\_-gradient);filter:drop-shadow( 1px 2px 2px rgba(185,185,185,1));}#chatgpt-mermaid-\_r_376\_ .node text{font-size:14px;font-weight:600;letter-spacing:normal;fill:rgb(153, 206, 255);}#chatgpt-mermaid-\_r_376\_ .edgeLabels text{font-size:13px;font-weight:600;letter-spacing:-0.08px;fill:rgb(153, 206, 255);}#chatgpt-mermaid-\_r_376\_ .node tspan[font-weight="normal"],#chatgpt-mermaid-\_r_376\_ .edgeLabels tspan[font-weight="normal"]{font-weight:600;}#chatgpt-mermaid-\_r_376\_ .edgeLabel .label rect{opacity:1;rx:13px;ry:13px;fill:rgb(0, 14, 26);stroke:rgb(26, 62, 95);stroke-width:1px;}#chatgpt-mermaid-\_r_376\_ .node rect,#chatgpt-mermaid-\_r_376\_ .node circle,#chatgpt-mermaid-\_r_376\_ .node ellipse,#chatgpt-mermaid-\_r_376\_ .node polygon,#chatgpt-mermaid-\_r_376\_ .node path{fill:rgb(0, 40, 77);stroke:rgba(255, 255, 255, 0.1);stroke-width:1px;}#chatgpt-mermaid-\_r_376\_ .node rect{rx:16px;ry:16px;}#chatgpt-mermaid-\_r_376\_ .mermaid-decision .label-container{fill:rgb(0, 14, 26);stroke:rgb(26, 62, 95);stroke-dasharray:2,2;}#chatgpt-mermaid-\_r_376\_ .edgePaths .flowchart-link{stroke:rgb(175, 175, 175);stroke-width:1px;stroke-linecap:round;stroke-linejoin:round;}#chatgpt-mermaid-\_r_376\_ .marker{fill:rgb(175, 175, 175);stroke:rgb(175, 175, 175);}#chatgpt-mermaid-\_r_376\_ :root{--mermaid-font-family:-apple-system-body,ui-sans-serif,-apple-system,system-ui,"Segoe UI",Helvetica,"Apple Color Emoji",Arial,sans-serif,"Segoe UI Emoji","Segoe UI Symbol";}Customer opens ZENVEGOLogin / RegistrationSelect delivery addressCheck serviceabilityBrowse live marketplaceSelect products from growersAdd to cartBackend validates price andstockStock available?Show updated availabilityReserve inventoryCreate parent order and sellerordersPayment provider checkoutPayment verified?Payment failed / releasereservationConfirm orderNotify relevant growersGrower accepts orderPrepare produceReady for pickupCreate delivery assignmentDelivery partner acceptsScan pickup QRBackend verifies pickupNavigate to customerScan delivery QR / verifydeliveryBackend verifies deliveryMark deliveredUpdate customer, grower andadminUpdate financial recordsNoYesNoYes
+
+## **B. Four-portal connection workflow**
+
+\#chatgpt-mermaid-\_r_37d\_{font-family:-apple-system-body,ui-sans-serif,-apple-system,system-ui,"Segoe UI",Helvetica,"Apple Color Emoji",Arial,sans-serif,"Segoe UI Emoji","Segoe UI Symbol";font-size:16px;fill:rgb(237, 237, 237);}@keyframes edge-animation-frame{from{stroke-dashoffset:0;}}@keyframes dash{to{stroke-dashoffset:0;}}#chatgpt-mermaid-\_r_37d\_ .edge-animation-slow{stroke-dasharray:9,5!important;stroke-dashoffset:900;animation:dash 50s linear infinite;stroke-linecap:round;}#chatgpt-mermaid-\_r_37d\_ .edge-animation-fast{stroke-dasharray:9,5!important;stroke-dashoffset:900;animation:dash 20s linear infinite;stroke-linecap:round;}#chatgpt-mermaid-\_r_37d\_ .error-icon{fill:rgb(48, 48, 48);}#chatgpt-mermaid-\_r_37d\_ .error-text{fill:rgb(237, 237, 237);stroke:rgb(237, 237, 237);}#chatgpt-mermaid-\_r_37d\_ .edge-thickness-normal{stroke-width:1px;}#chatgpt-mermaid-\_r_37d\_ .edge-thickness-thick{stroke-width:3.5px;}#chatgpt-mermaid-\_r_37d\_ .edge-pattern-solid{stroke-dasharray:0;}#chatgpt-mermaid-\_r_37d\_ .edge-thickness-invisible{stroke-width:0;fill:none;}#chatgpt-mermaid-\_r_37d\_ .edge-pattern-dashed{stroke-dasharray:3;}#chatgpt-mermaid-\_r_37d\_ .edge-pattern-dotted{stroke-dasharray:2;}#chatgpt-mermaid-\_r_37d\_ .marker{fill:rgb(175, 175, 175);stroke:rgb(175, 175, 175);}#chatgpt-mermaid-\_r_37d\_ .marker.cross{stroke:rgb(175, 175, 175);}#chatgpt-mermaid-\_r_37d\_ svg{font-family:-apple-system-body,ui-sans-serif,-apple-system,system-ui,"Segoe UI",Helvetica,"Apple Color Emoji",Arial,sans-serif,"Segoe UI Emoji","Segoe UI Symbol";font-size:16px;}#chatgpt-mermaid-\_r_37d\_ p{margin:0;}#chatgpt-mermaid-\_r_37d\_ .label{font-family:-apple-system-body,ui-sans-serif,-apple-system,system-ui,"Segoe UI",Helvetica,"Apple Color Emoji",Arial,sans-serif,"Segoe UI Emoji","Segoe UI Symbol";color:rgb(237, 237, 237);}#chatgpt-mermaid-\_r_37d\_ .cluster-label text{fill:rgb(237, 237, 237);}#chatgpt-mermaid-\_r_37d\_ .cluster-label span{color:rgb(237, 237, 237);}#chatgpt-mermaid-\_r_37d\_ .cluster-label span p{background-color:transparent;}#chatgpt-mermaid-\_r_37d\_ .label text,#chatgpt-mermaid-\_r_37d\_ span{fill:rgb(237, 237, 237);color:rgb(237, 237, 237);}#chatgpt-mermaid-\_r_37d\_ .node rect,#chatgpt-mermaid-\_r_37d\_ .node circle,#chatgpt-mermaid-\_r_37d\_ .node ellipse,#chatgpt-mermaid-\_r_37d\_ .node polygon,#chatgpt-mermaid-\_r_37d\_ .node path{fill:rgb(9, 23, 44);stroke:rgb(31, 78, 148);stroke-width:1px;}#chatgpt-mermaid-\_r_37d\_ .rough-node .label text,#chatgpt-mermaid-\_r_37d\_ .node .label text,#chatgpt-mermaid-\_r_37d\_ .image-shape .label,#chatgpt-mermaid-\_r_37d\_ .icon-shape .label{text-anchor:middle;}#chatgpt-mermaid-\_r_37d\_ .node .katex path{fill:#000;stroke:#000;stroke-width:1px;}#chatgpt-mermaid-\_r_37d\_ .rough-node .label,#chatgpt-mermaid-\_r_37d\_ .node .label,#chatgpt-mermaid-\_r_37d\_ .image-shape .label,#chatgpt-mermaid-\_r_37d\_ .icon-shape .label{text-align:center;}#chatgpt-mermaid-\_r_37d\_ .node.clickable{cursor:pointer;}#chatgpt-mermaid-\_r_37d\_ .root .anchor path{fill:rgb(175, 175, 175)!important;stroke-width:0;stroke:rgb(175, 175, 175);}#chatgpt-mermaid-\_r_37d\_ .arrowheadPath{fill:rgb(175, 175, 175);}#chatgpt-mermaid-\_r_37d\_ .edgePath .path{stroke:rgb(175, 175, 175);stroke-width:1px;}#chatgpt-mermaid-\_r_37d\_ .flowchart-link{stroke:rgb(175, 175, 175);fill:none;}#chatgpt-mermaid-\_r_37d\_ .edgeLabel{background-color:rgb(0, 0, 0);text-align:center;}#chatgpt-mermaid-\_r_37d\_ .edgeLabel p{background-color:rgb(0, 0, 0);}#chatgpt-mermaid-\_r_37d\_ .edgeLabel rect{opacity:0.5;background-color:rgb(0, 0, 0);fill:rgb(0, 0, 0);}#chatgpt-mermaid-\_r_37d\_ .labelBkg{background-color:rgba(0, 0, 0, 0.5);}#chatgpt-mermaid-\_r_37d\_ .cluster rect{fill:rgb(48, 48, 48);stroke:rgba(255, 255, 255, 0.15);stroke-width:1px;}#chatgpt-mermaid-\_r_37d\_ .cluster text{fill:rgb(237, 237, 237);}#chatgpt-mermaid-\_r_37d\_ .cluster span{color:rgb(237, 237, 237);}#chatgpt-mermaid-\_r_37d\_ div.mermaidTooltip{position:absolute;text-align:center;max-width:200px;padding:2px;font-family:-apple-system-body,ui-sans-serif,-apple-system,system-ui,"Segoe UI",Helvetica,"Apple Color Emoji",Arial,sans-serif,"Segoe UI Emoji","Segoe UI Symbol";font-size:12px;background:rgb(48, 48, 48);border:1px solid rgba(255, 255, 255, 0.15);border-radius:2px;pointer-events:none;z-index:100;}#chatgpt-mermaid-\_r_37d\_ .flowchartTitleText{text-anchor:middle;font-size:18px;fill:rgb(237, 237, 237);}#chatgpt-mermaid-\_r_37d\_ rect.text{fill:none;stroke-width:0;}#chatgpt-mermaid-\_r_37d\_ .icon-shape,#chatgpt-mermaid-\_r_37d\_ .image-shape{background-color:rgb(0, 0, 0);text-align:center;}#chatgpt-mermaid-\_r_37d\_ .icon-shape p,#chatgpt-mermaid-\_r_37d\_ .image-shape p{background-color:rgb(0, 0, 0);padding:2px;}#chatgpt-mermaid-\_r_37d\_ .icon-shape .label rect,#chatgpt-mermaid-\_r_37d\_ .image-shape .label rect{opacity:0.5;background-color:rgb(0, 0, 0);fill:rgb(0, 0, 0);}#chatgpt-mermaid-\_r_37d\_ .label-icon{display:inline-block;height:1em;overflow:visible;vertical-align:-0.125em;}#chatgpt-mermaid-\_r_37d\_ .node .label-icon path{fill:currentColor;stroke:revert;stroke-width:revert;}#chatgpt-mermaid-\_r_37d\_ .node .neo-node{stroke:rgb(31, 78, 148);}#chatgpt-mermaid-\_r_37d\_ [data-look="neo"].node rect,#chatgpt-mermaid-\_r_37d\_ [data-look="neo"].cluster rect,#chatgpt-mermaid-\_r_37d\_ [data-look="neo"].node polygon{stroke:url(#chatgpt-mermaid-\_r_37d\_-gradient);filter:drop-shadow( 1px 2px 2px rgba(185,185,185,1));}#chatgpt-mermaid-\_r_37d\_ [data-look="neo"].swimlane.cluster rect{filter:none;}#chatgpt-mermaid-\_r_37d\_ [data-look="neo"].node path{stroke:url(#chatgpt-mermaid-\_r_37d\_-gradient);stroke-width:1px;}#chatgpt-mermaid-\_r_37d\_ [data-look="neo"].node .outer-path{filter:drop-shadow( 1px 2px 2px rgba(185,185,185,1));}#chatgpt-mermaid-\_r_37d\_ [data-look="neo"].node .neo-line path{stroke:rgb(31, 78, 148);filter:none;}#chatgpt-mermaid-\_r_37d\_ [data-look="neo"].node circle{stroke:url(#chatgpt-mermaid-\_r_37d\_-gradient);filter:drop-shadow( 1px 2px 2px rgba(185,185,185,1));}#chatgpt-mermaid-\_r_37d\_ [data-look="neo"].node circle .state-start{fill:#000000;}#chatgpt-mermaid-\_r_37d\_ [data-look="neo"].icon-shape .icon{fill:url(#chatgpt-mermaid-\_r_37d\_-gradient);filter:drop-shadow( 1px 2px 2px rgba(185,185,185,1));}#chatgpt-mermaid-\_r_37d\_ [data-look="neo"].icon-shape .icon-neo path{stroke:url(#chatgpt-mermaid-\_r_37d\_-gradient);filter:drop-shadow( 1px 2px 2px rgba(185,185,185,1));}#chatgpt-mermaid-\_r_37d\_ .node text{font-size:14px;font-weight:600;letter-spacing:normal;fill:rgb(153, 206, 255);}#chatgpt-mermaid-\_r_37d\_ .edgeLabels text{font-size:13px;font-weight:600;letter-spacing:-0.08px;fill:rgb(153, 206, 255);}#chatgpt-mermaid-\_r_37d\_ .node tspan[font-weight="normal"],#chatgpt-mermaid-\_r_37d\_ .edgeLabels tspan[font-weight="normal"]{font-weight:600;}#chatgpt-mermaid-\_r_37d\_ .edgeLabel .label rect{opacity:1;rx:13px;ry:13px;fill:rgb(0, 14, 26);stroke:rgb(26, 62, 95);stroke-width:1px;}#chatgpt-mermaid-\_r_37d\_ .node rect,#chatgpt-mermaid-\_r_37d\_ .node circle,#chatgpt-mermaid-\_r_37d\_ .node ellipse,#chatgpt-mermaid-\_r_37d\_ .node polygon,#chatgpt-mermaid-\_r_37d\_ .node path{fill:rgb(0, 40, 77);stroke:rgba(255, 255, 255, 0.1);stroke-width:1px;}#chatgpt-mermaid-\_r_37d\_ .node rect{rx:16px;ry:16px;}#chatgpt-mermaid-\_r_37d\_ .mermaid-decision .label-container{fill:rgb(0, 14, 26);stroke:rgb(26, 62, 95);stroke-dasharray:2,2;}#chatgpt-mermaid-\_r_37d\_ .edgePaths .flowchart-link{stroke:rgb(175, 175, 175);stroke-width:1px;stroke-linecap:round;stroke-linejoin:round;}#chatgpt-mermaid-\_r_37d\_ .marker{fill:rgb(175, 175, 175);stroke:rgb(175, 175, 175);}#chatgpt-mermaid-\_r_37d\_ :root{--mermaid-font-family:-apple-system-body,ui-sans-serif,-apple-system,system-ui,"Segoe UI",Helvetica,"Apple Color Emoji",Arial,sans-serif,"Segoe UI Emoji","Segoe UI Symbol";}FirebaseExpress BackendAdmin PortalDelivery PortalGrower PortalCustomer PortalAuthenticationFirestoreStorageReal-time listenersCloud MessagingAuthentication andauthorizationProduct and inventory serviceOrder servicePayment serviceQR verificationDelivery serviceNotification serviceVerify usersModerate productsMonitor ordersManage exceptionsReview paymentsReceive assignmentAccept assignmentPickup verificationMaps and navigationDelivery verificationManage productsManage inventoryReceive seller orderAccept and preparePickup handoverSearch productsCart and checkoutPaymentOrder tracking
+
+## **C. Database relationship workflow**
+
+\#chatgpt-mermaid-\_r_37k\_{font-family:-apple-system-body,ui-sans-serif,-apple-system,system-ui,"Segoe UI",Helvetica,"Apple Color Emoji",Arial,sans-serif,"Segoe UI Emoji","Segoe UI Symbol";font-size:16px;fill:rgb(237, 237, 237);}@keyframes edge-animation-frame{from{stroke-dashoffset:0;}}@keyframes dash{to{stroke-dashoffset:0;}}#chatgpt-mermaid-\_r_37k\_ .edge-animation-slow{stroke-dasharray:9,5!important;stroke-dashoffset:900;animation:dash 50s linear infinite;stroke-linecap:round;}#chatgpt-mermaid-\_r_37k\_ .edge-animation-fast{stroke-dasharray:9,5!important;stroke-dashoffset:900;animation:dash 20s linear infinite;stroke-linecap:round;}#chatgpt-mermaid-\_r_37k\_ .error-icon{fill:rgb(48, 48, 48);}#chatgpt-mermaid-\_r_37k\_ .error-text{fill:rgb(237, 237, 237);stroke:rgb(237, 237, 237);}#chatgpt-mermaid-\_r_37k\_ .edge-thickness-normal{stroke-width:1px;}#chatgpt-mermaid-\_r_37k\_ .edge-thickness-thick{stroke-width:3.5px;}#chatgpt-mermaid-\_r_37k\_ .edge-pattern-solid{stroke-dasharray:0;}#chatgpt-mermaid-\_r_37k\_ .edge-thickness-invisible{stroke-width:0;fill:none;}#chatgpt-mermaid-\_r_37k\_ .edge-pattern-dashed{stroke-dasharray:3;}#chatgpt-mermaid-\_r_37k\_ .edge-pattern-dotted{stroke-dasharray:2;}#chatgpt-mermaid-\_r_37k\_ .marker{fill:rgb(175, 175, 175);stroke:rgb(175, 175, 175);}#chatgpt-mermaid-\_r_37k\_ .marker.cross{stroke:rgb(175, 175, 175);}#chatgpt-mermaid-\_r_37k\_ svg{font-family:-apple-system-body,ui-sans-serif,-apple-system,system-ui,"Segoe UI",Helvetica,"Apple Color Emoji",Arial,sans-serif,"Segoe UI Emoji","Segoe UI Symbol";font-size:16px;}#chatgpt-mermaid-\_r_37k\_ p{margin:0;}#chatgpt-mermaid-\_r_37k\_ .entityBox{fill:rgb(9, 23, 44);stroke:rgb(31, 78, 148);}#chatgpt-mermaid-\_r_37k\_ .relationshipLabelBox{fill:rgb(48, 48, 48);opacity:0.7;background-color:rgb(48, 48, 48);}#chatgpt-mermaid-\_r_37k\_ .relationshipLabelBox rect{opacity:0.5;}#chatgpt-mermaid-\_r_37k\_ .labelBkg{background-color:rgba(48, 48, 48, 0.5);}#chatgpt-mermaid-\_r_37k\_ .edgeLabel{background-color:rgb(0, 0, 0);}#chatgpt-mermaid-\_r_37k\_ .edgeLabel .label rect{fill:rgb(0, 0, 0);}#chatgpt-mermaid-\_r_37k\_ .edgeLabel .label text{fill:rgb(237, 237, 237);}#chatgpt-mermaid-\_r_37k\_ .edgeLabel .label{fill:rgb(31, 78, 148);font-size:14px;}#chatgpt-mermaid-\_r_37k\_ .label{font-family:-apple-system-body,ui-sans-serif,-apple-system,system-ui,"Segoe UI",Helvetica,"Apple Color Emoji",Arial,sans-serif,"Segoe UI Emoji","Segoe UI Symbol";color:rgb(237, 237, 237);}#chatgpt-mermaid-\_r_37k\_ .edge-pattern-dashed{stroke-dasharray:8,8;}#chatgpt-mermaid-\_r_37k\_ .node rect,#chatgpt-mermaid-\_r_37k\_ .node circle,#chatgpt-mermaid-\_r_37k\_ .node ellipse,#chatgpt-mermaid-\_r_37k\_ .node polygon{fill:rgb(9, 23, 44);stroke:rgb(31, 78, 148);stroke-width:1px;}#chatgpt-mermaid-\_r_37k\_ .relationshipLine{stroke:rgb(175, 175, 175);stroke-width:1px;fill:none;}#chatgpt-mermaid-\_r_37k\_ .marker{fill:none!important;stroke:rgb(175, 175, 175)!important;stroke-width:1;}#chatgpt-mermaid-\_r_37k\_ [data-look=neo].labelBkg{background-color:rgba(48, 48, 48, 0.5);}#chatgpt-mermaid-\_r_37k\_ .node .neo-node{stroke:rgb(31, 78, 148);}#chatgpt-mermaid-\_r_37k\_ [data-look="neo"].node rect,#chatgpt-mermaid-\_r_37k\_ [data-look="neo"].cluster rect,#chatgpt-mermaid-\_r_37k\_ [data-look="neo"].node polygon{stroke:url(#chatgpt-mermaid-\_r_37k\_-gradient);filter:drop-shadow( 1px 2px 2px rgba(185,185,185,1));}#chatgpt-mermaid-\_r_37k\_ [data-look="neo"].swimlane.cluster rect{filter:none;}#chatgpt-mermaid-\_r_37k\_ [data-look="neo"].node path{stroke:url(#chatgpt-mermaid-\_r_37k\_-gradient);stroke-width:1px;}#chatgpt-mermaid-\_r_37k\_ [data-look="neo"].node .outer-path{filter:drop-shadow( 1px 2px 2px rgba(185,185,185,1));}#chatgpt-mermaid-\_r_37k\_ [data-look="neo"].node .neo-line path{stroke:rgb(31, 78, 148);filter:none;}#chatgpt-mermaid-\_r_37k\_ [data-look="neo"].node circle{stroke:url(#chatgpt-mermaid-\_r_37k\_-gradient);filter:drop-shadow( 1px 2px 2px rgba(185,185,185,1));}#chatgpt-mermaid-\_r_37k\_ [data-look="neo"].node circle .state-start{fill:#000000;}#chatgpt-mermaid-\_r_37k\_ [data-look="neo"].icon-shape .icon{fill:url(#chatgpt-mermaid-\_r_37k\_-gradient);filter:drop-shadow( 1px 2px 2px rgba(185,185,185,1));}#chatgpt-mermaid-\_r_37k\_ [data-look="neo"].icon-shape .icon-neo path{stroke:url(#chatgpt-mermaid-\_r_37k\_-gradient);filter:drop-shadow( 1px 2px 2px rgba(185,185,185,1));}#chatgpt-mermaid-\_r_37k\_ :root{--mermaid-font-family:-apple-system-body,ui-sans-serif,-apple-system,system-ui,"Segoe UI",Helvetica,"Apple Color Emoji",Arial,sans-serif,"Segoe UI Emoji","Segoe UI Symbol";}USERSCUSTOMER_PROFILESGROWER_PROFILESDELIVERY_PROFILESADMIN_PROFILESADDRESSESCARTSORDERSPRODUCTSINVENTORYHARVEST_BATCHESORDER_ITEMSSELLER_ORDERSDELIVERY_ASSIGNMENTSPAYMENTSPAYMENT_EVENTSREFUNDSQR_TOKENSNOTIFICATIONSSETTLEMENTShashashashasownsmaintainsplacespublisheshastrackscontainsgroupsfulfilsassignedhandleshasrecordsmay_haveverified_byreceivesreceives
+
+# **3. Critical connections AI Studio must implement**
+
+| Connection                 | What must actually happen                 |
+| -------------------------- | ----------------------------------------- |
+| Customer → Backend         | Search, cart, checkout and orders         |
+| Grower → Backend           | Products, stock and seller orders         |
+| Delivery → Backend         | Assignments, QR verification and delivery |
+| Admin → Backend            | Verification and platform management      |
+| Backend → Firestore        | Persistent business records               |
+| Backend → Payment provider | Payment creation and verification         |
+| Backend → QR service       | Secure token generation and verification  |
+| Frontend → Maps            | Address and map interaction               |
+| Backend → Notifications    | Real event-based notification creation    |
+| Firestore → Portals        | Authorized real-time updates              |
+
+# **4. One important business rule: parent orders and seller orders**
+
+ZENVEGO can have multiple growers selling through one marketplace. This means one customer checkout might contain produce from three different growers.
+
+For example:
+
+**Customer order — ZV-2026-00125**
+
+**Grower A**
+
+Preparing
+
+Tomatoes and leafy vegetables
+
+**Grower B**
+
+Accepted
+
+Bananas and seasonal fruits
+
+**Grower C**
+
+Awaiting acceptance
+
+Fresh herbs
+
+**Customer sees:** one parent order with separate seller progress.
+
+**Growers see:** only their own fulfilment orders.
+
+**Admin sees:** the complete authorized operational picture.
+
+This is why the system needs separate `orders`, `seller_orders`, and `delivery_assignments` records. A simple one-order/one-seller design will create problems as soon as multiple growers participate.
+
+# **5. Build and verification sequence**
+
+Do not allow AI Studio to attempt all the features simultaneously and return another collection of disconnected screens.
+
+**Implementation tracker**
+
+0/10 verified
+
+**1. Project audit and backend startup**
+
+Inspect existing code, fix startup, dependencies, environment configuration and existing APIs.
+
+**2. Firebase connection**
+
+Verify Authentication, Firestore reads and writes, Storage and Security Rules.
+
+**3. Grower and product workflow**
+
+Registration, approval, product publication, inventory and harvest.
+
+**4. Customer marketplace and ordering**
+
+Live product discovery, cart, stock reservation, checkout and order creation.
+
+**5. Payment integration**
+
+Provider checkout, signature verification, webhook processing and refunds.
+
+**6. Delivery and QR**
+
+Assignments, QR generation, scanning, pickup and delivery verification.
+
+**7. Maps and notifications**
+
+Address search, location permission, routes, notifications and live subscriptions.
+
+**8. Admin and institutional buyers**
+
+Verification, moderation, exceptions, settlements and bulk enquiries.
+
+**9. Mobile and security**
+
+Responsive testing, permissions, role isolation and security checks.
+
+**10. End-to-end release testing**
+
+Test the complete business workflow in an isolated environment and prepare deployment.
+
+&#x20;Copy tracker
+
+The tracker is for your own implementation review; it does not automatically test AI Studio's code.
+
+## **6. My final instruction to you**
+
+Do not accept another response from AI Studio that says:
+
+- "Firebase integration completed" without showing a successful database operation.
+- "Payment integrated" without a verified provider test transaction.
+- "QR implemented" without scanning and backend verification.
+- "Maps integrated" without an actual configured map.
+- "Real-time implemented" without a live update test.
+- "Mobile responsive" without testing actual mobile widths.
+- "Order system completed" without successfully placing and retrieving an order.
+
+**The next thing I recommend is to give AI Studio this complete specification, then make it complete the Firebase and backend phase before it builds more screens.**
+
+That is the foundation ZENVEGO needs.

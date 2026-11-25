@@ -1,0 +1,1180 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // Global Safety Net — default deny everything
+    match /{document=**} {
+      allow read, write: if false;
+    }
+
+    // -------------------------------------------------------------------------
+    // Global Hardened Primitives
+    // -------------------------------------------------------------------------
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    function isVerifiedUser() {
+      return isSignedIn() && request.auth.token.email_verified == true;
+    }
+
+    // Authorized operator check (used only by separate management app; zero admin exposure in public app)
+    function isOperatorAdmin() {
+      return isVerifiedUser() && (
+        request.auth.token.admin == true
+        || request.auth.token.email == 'asvikaravi519@gmail.com'
+      );
+    }
+
+    function isVerifiedDeliveryPartner() {
+      return isVerifiedUser()
+        && exists(/databases/$(database)/documents/delivery_profiles/$(request.auth.uid))
+        && get(/databases/$(database)/documents/delivery_profiles/$(request.auth.uid)).data.kycStatus == 'verified';
+    }
+
+    function isValidId(id) {
+      return id is string && id.size() >= 1 && id.size() <= 128 && id.matches('^[a-zA-Z0-9_\\-]+$');
+    }
+
+    function incoming() {
+      return request.resource.data;
+    }
+
+    function existing() {
+      return resource.data;
+    }
+
+    function isValidRole(role) {
+      return role is string && role in ['customer', 'grower', 'delivery', 'bulk'];
+    }
+
+    function isValidNotificationEvent(ev) {
+      return ev is string && ev in [
+        'ORDER_CONFIRMED',
+        'SELLER_ORDER_ACCEPTED',
+        'SELLER_ORDER_REJECTED',
+        'ORDER_READY_FOR_PICKUP',
+        'DELIVERY_ACCEPTED',
+        'OUT_FOR_DELIVERY',
+        'DELIVERY_COMPLETED',
+        'DELIVERY_ISSUE',
+        'SETTLEMENT_UPDATED',
+        'BULK_QUOTE_SUBMITTED',
+        'BULK_QUOTE_ACCEPTED',
+        'BULK_QUOTE_REJECTED',
+        'KYC_APPROVED',
+        'KYC_CORRECTION_NEEDED',
+        'WALLET_TOPUP_CREDITED'
+      ];
+    }
+
+    // -------------------------------------------------------------------------
+    // Entity Validation Blueprints (called on BOTH create & update)
+    // -------------------------------------------------------------------------
+    function isValidUser(data, userId) {
+      return data.keys().hasAll(['uid', 'displayName', 'activeRole', 'createdAt', 'updatedAt'])
+        && data.keys().hasOnly([
+          'uid', 'displayName', 'email', 'phone', 'activeRole', 'photoURL',
+          'avatarType', 'avatarPreset', 'customAvatarData', 'city', 'bio',
+          'deliveryNote', 'organizationName', 'defaultAddressId', 'profileCompleted',
+          'walletBalance', 'savedUpiId', 'language', 'favoriteGrowerIds',
+          'registeredPortals', 'createdAt', 'updatedAt'
+        ])
+        && data.uid == userId
+        && data.displayName is string && data.displayName.size() >= 1 && data.displayName.size() <= 120
+        && isValidRole(data.activeRole)
+        && (!('email' in data) || (data.email is string && data.email.size() <= 200))
+        && (!('phone' in data) || (data.phone is string && data.phone.size() <= 24))
+        && (!('photoURL' in data) || (data.photoURL is string && data.photoURL.size() <= 600))
+        && (!('avatarType' in data) || (data.avatarType is string && data.avatarType in ['zenvego', 'personal']))
+        && (!('avatarPreset' in data) || (data.avatarPreset is string && data.avatarPreset.size() <= 40))
+        && (!('customAvatarData' in data) || (data.customAvatarData is string && data.customAvatarData.size() <= 32000))
+        && (!('city' in data) || (data.city is string && data.city.size() <= 80))
+        && (!('bio' in data) || (data.bio is string && data.bio.size() <= 240))
+        && (!('deliveryNote' in data) || (data.deliveryNote is string && data.deliveryNote.size() <= 200))
+        && (!('organizationName' in data) || (data.organizationName is string && data.organizationName.size() <= 120))
+        && (!('defaultAddressId' in data) || (data.defaultAddressId is string && data.defaultAddressId.size() <= 128))
+        && (!('profileCompleted' in data) || data.profileCompleted is bool)
+        && (!('walletBalance' in data) || (data.walletBalance is number && data.walletBalance >= 0 && data.walletBalance <= 500000))
+        && (!('savedUpiId' in data) || (data.savedUpiId is string && data.savedUpiId.size() <= 80))
+        && (!('language' in data) || (data.language is string && data.language.size() <= 24))
+        && (!('favoriteGrowerIds' in data) || (data.favoriteGrowerIds is list && data.favoriteGrowerIds.size() <= 50 && (data.favoriteGrowerIds.size() == 0 || data.favoriteGrowerIds[0] is string)))
+        && (!('registeredPortals' in data) || (data.registeredPortals is list && data.registeredPortals.size() >= 1 && data.registeredPortals.size() <= 4 && data.registeredPortals.hasOnly(['customer', 'grower', 'delivery', 'bulk'])))
+        && data.createdAt is timestamp
+        && data.updatedAt is timestamp;
+    }
+
+    function isValidWalletTransaction(data, userId) {
+      return data.keys().hasAll(['userId', 'type', 'amount', 'method', 'note', 'createdAt'])
+        && data.keys().hasOnly(['userId', 'type', 'status', 'amount', 'orderCode', 'referenceId', 'method', 'note', 'createdAt'])
+        && data.userId == userId
+        && data.type in ['topup', 'order_debit', 'escrow_hold', 'escrow_release', 'refund']
+        && (!('status' in data) || data.status in ['pending_verification', 'credited', 'completed', 'rejected'])
+        && data.amount is number && data.amount > 0 && data.amount <= 500000
+        && (!('orderCode' in data) || (data.orderCode is string && data.orderCode.size() <= 32))
+        && (!('referenceId' in data) || (data.referenceId is string && data.referenceId.size() <= 80))
+        && data.method is string && data.method.size() >= 1 && data.method.size() <= 60
+        && data.note is string && data.note.size() >= 1 && data.note.size() <= 200
+        && data.createdAt is timestamp;
+    }
+
+    function isValidSupportTicket(data, userId) {
+      return data.keys().hasAll(['userId', 'category', 'subject', 'message', 'status', 'createdAt', 'updatedAt'])
+        && data.keys().hasOnly(['userId', 'category', 'orderCode', 'subject', 'message', 'contactPhone', 'status', 'createdAt', 'updatedAt'])
+        && data.userId == userId
+        && data.category in ['order_issue', 'delivery', 'grower_payout', 'address_account', 'bulk_supply', 'general']
+        && (!('orderCode' in data) || (data.orderCode is string && data.orderCode.size() <= 32))
+        && data.subject is string && data.subject.size() >= 3 && data.subject.size() <= 120
+        && data.message is string && data.message.size() >= 5 && data.message.size() <= 800
+        && (!('contactPhone' in data) || (data.contactPhone is string && data.contactPhone.size() <= 24))
+        && data.status in ['open', 'resolved']
+        && data.createdAt is timestamp
+        && data.updatedAt is timestamp;
+    }
+
+    function isValidAddress(data, userId) {
+      return data.keys().hasAll(['userId', 'label', 'formattedAddress', 'lat', 'lng', 'serviceable', 'createdAt', 'updatedAt'])
+        && data.keys().hasOnly(['userId', 'label', 'formattedAddress', 'lat', 'lng', 'serviceable', 'createdAt', 'updatedAt'])
+        && data.userId == userId
+        && data.userId == request.auth.uid
+        && data.label is string && data.label.size() >= 1 && data.label.size() <= 40
+        && data.formattedAddress is string && data.formattedAddress.size() >= 3 && data.formattedAddress.size() <= 300
+        && data.lat is number && data.lat >= -90 && data.lat <= 90
+        && data.lng is number && data.lng >= -180 && data.lng <= 180
+        && data.serviceable is bool
+        && data.createdAt is timestamp
+        && data.updatedAt is timestamp;
+    }
+
+    function isValidCartItem(data, userId) {
+      return data.keys().hasAll(['userId', 'productId', 'growerId', 'quantity', 'updatedAt'])
+        && data.keys().hasOnly(['userId', 'productId', 'growerId', 'quantity', 'updatedAt'])
+        && data.userId == userId
+        && data.userId == request.auth.uid
+        && isValidId(data.productId)
+        && isValidId(data.growerId)
+        && data.quantity is number && data.quantity >= 1 && data.quantity <= 500
+        && data.updatedAt is timestamp;
+    }
+
+    // Public grower storefront — strictly excludes private KYC PII (phone, govId, selfies, farm photos)
+    function isValidGrowerProfile(data, growerId) {
+      return data.keys().hasAll(['ownerId', 'farmName', 'growerName', 'farmType', 'areaName', 'lat', 'lng', 'verificationStatus', 'createdAt', 'updatedAt'])
+        && data.keys().hasOnly([
+          'ownerId', 'farmName', 'growerName', 'farmType', 'areaName', 'lat', 'lng',
+          'fssaiNumber', 'livenessConfirmed', 'verificationStatus', 'chemicalFree',
+          'createdAt', 'updatedAt'
+        ])
+        && data.ownerId == growerId
+        && data.farmName is string && data.farmName.size() >= 2 && data.farmName.size() <= 120
+        && data.growerName is string && data.growerName.size() >= 2 && data.growerName.size() <= 120
+        && data.farmType is string && data.farmType.size() >= 1 && data.farmType.size() <= 80
+        && data.areaName is string && data.areaName.size() >= 1 && data.areaName.size() <= 160
+        && data.lat is number && data.lat >= -90 && data.lat <= 90
+        && data.lng is number && data.lng >= -180 && data.lng <= 180
+        && (!('fssaiNumber' in data) || (data.fssaiNumber is string && data.fssaiNumber.size() <= 40))
+        && (!('livenessConfirmed' in data) || data.livenessConfirmed is bool)
+        && (!('chemicalFree' in data) || data.chemicalFree is bool)
+        && data.verificationStatus in ['pending', 'verified', 'correction_needed', 'rejected']
+        && data.createdAt is timestamp
+        && data.updatedAt is timestamp;
+    }
+
+    // Private grower KYC record — readable/writable only by owner (submit/resubmit) & authorized operator
+    function isValidGrowerKyc(data, growerId) {
+      return data.keys().hasAll(['ownerId', 'phone', 'govIdType', 'govIdLast4', 'liveSelfieData', 'farmPhotoData', 'livenessConfirmed', 'reviewStatus', 'createdAt', 'updatedAt'])
+        && data.keys().hasOnly([
+          'ownerId', 'phone', 'fssaiNumber', 'govIdType', 'govIdLast4',
+          'liveSelfieData', 'farmPhotoData', 'livePhotoCapturedAt',
+          'livenessConfirmed', 'reviewStatus', 'reviewNote', 'createdAt', 'updatedAt'
+        ])
+        && data.ownerId == growerId
+        && data.phone is string && data.phone.size() >= 7 && data.phone.size() <= 24
+        && (!('fssaiNumber' in data) || (data.fssaiNumber is string && data.fssaiNumber.size() <= 40))
+        && data.govIdType in ['aadhaar', 'pan', 'voter_id']
+        && data.govIdLast4 is string && data.govIdLast4.size() >= 4 && data.govIdLast4.size() <= 20
+        && data.liveSelfieData is string && data.liveSelfieData.size() >= 20 && data.liveSelfieData.size() <= 32000
+        && data.farmPhotoData is string && data.farmPhotoData.size() >= 20 && data.farmPhotoData.size() <= 32000
+        && (!('livePhotoCapturedAt' in data) || (data.livePhotoCapturedAt is string && data.livePhotoCapturedAt.size() <= 64))
+        && data.livenessConfirmed is bool
+        && data.reviewStatus in ['pending', 'verified', 'correction_needed', 'rejected']
+        && (!('reviewNote' in data) || (data.reviewNote is string && data.reviewNote.size() <= 240))
+        && data.createdAt is timestamp
+        && data.updatedAt is timestamp;
+    }
+
+    function isValidDeliveryProfile(data, partnerId) {
+      return data.keys().hasAll(['userId', 'partnerName', 'vehicleType', 'clusterArea', 'availableForDispatch', 'kycStatus', 'createdAt', 'updatedAt'])
+        && data.keys().hasOnly([
+          'userId', 'partnerName', 'phone', 'emergencyPhone', 'vehicleType',
+          'vehiclePlate', 'dlNumber', 'govIdType', 'govIdLast4', 'liveSelfieData',
+          'idDocumentPhotoData', 'livePhotoCapturedAt', 'livenessConfirmed',
+          'clusterArea', 'availableForDispatch', 'kycStatus', 'reviewNote',
+          'createdAt', 'updatedAt'
+        ])
+        && data.userId == partnerId
+        && data.partnerName is string && data.partnerName.size() >= 2 && data.partnerName.size() <= 120
+        && (!('phone' in data) || (data.phone is string && data.phone.size() <= 24))
+        && (!('emergencyPhone' in data) || (data.emergencyPhone is string && data.emergencyPhone.size() <= 24))
+        && data.vehicleType in ['ev', 'petrol', 'bicycle']
+        && (!('vehiclePlate' in data) || (data.vehiclePlate is string && data.vehiclePlate.size() <= 32))
+        && (!('dlNumber' in data) || (data.dlNumber is string && data.dlNumber.size() <= 40))
+        && (!('govIdType' in data) || (data.govIdType is string && data.govIdType in ['aadhaar', 'pan', 'dl']))
+        && (!('govIdLast4' in data) || (data.govIdLast4 is string && data.govIdLast4.size() <= 20))
+        && (!('liveSelfieData' in data) || (data.liveSelfieData is string && data.liveSelfieData.size() <= 32000))
+        && (!('idDocumentPhotoData' in data) || (data.idDocumentPhotoData is string && data.idDocumentPhotoData.size() <= 32000))
+        && (!('livePhotoCapturedAt' in data) || (data.livePhotoCapturedAt is string && data.livePhotoCapturedAt.size() <= 64))
+        && (!('livenessConfirmed' in data) || data.livenessConfirmed is bool)
+        && data.clusterArea is string && data.clusterArea.size() >= 1 && data.clusterArea.size() <= 120
+        && data.availableForDispatch is bool
+        && data.kycStatus in ['submitted', 'verified', 'rejected']
+        && (!('reviewNote' in data) || (data.reviewNote is string && data.reviewNote.size() <= 240))
+        && data.createdAt is timestamp
+        && data.updatedAt is timestamp;
+    }
+
+    function isValidProduct(data) {
+      return data.keys().hasAll(['growerId', 'farmName', 'name', 'category', 'price', 'unit', 'unitShort', 'stock', 'reserved', 'harvestedAt', 'available', 'chemicalFree', 'harvestedToday', 'image', 'createdAt', 'updatedAt'])
+        && data.keys().hasOnly(['growerId', 'farmName', 'name', 'variety', 'category', 'bedLabel', 'price', 'unit', 'unitShort', 'stock', 'reserved', 'harvestedAt', 'available', 'chemicalFree', 'harvestedToday', 'image', 'lat', 'lng', 'growerNote', 'createdAt', 'updatedAt'])
+        && isValidId(data.growerId)
+        && data.farmName is string && data.farmName.size() >= 2 && data.farmName.size() <= 120
+        && data.name is string && data.name.size() >= 2 && data.name.size() <= 120
+        && (!('variety' in data) || (data.variety is string && data.variety.size() <= 120))
+        && data.category in ['Leafy Greens', 'Vegetables', 'Heirloom', 'Fruits', 'Microgreens', 'Herbs']
+        && (!('bedLabel' in data) || (data.bedLabel is string && data.bedLabel.size() <= 40))
+        && data.price is number && data.price > 0 && data.price <= 100000
+        && data.unit is string && data.unit.size() >= 1 && data.unit.size() <= 24
+        && data.unitShort is string && data.unitShort.size() >= 1 && data.unitShort.size() <= 12
+        && data.stock is number && data.stock >= 0 && data.stock <= 100000
+        && data.reserved is number && data.reserved >= 0 && data.reserved <= 100000
+        && data.harvestedAt is string && data.harvestedAt.size() >= 1 && data.harvestedAt.size() <= 60
+        && data.available is bool
+        && data.chemicalFree is bool
+        && data.harvestedToday is bool
+        && data.image is string && data.image.size() >= 1 && data.image.size() <= 600
+        && (!('lat' in data) || (data.lat is number && data.lat >= -90 && data.lat <= 90))
+        && (!('lng' in data) || (data.lng is number && data.lng >= -180 && data.lng <= 180))
+        && (!('growerNote' in data) || (data.growerNote is string && data.growerNote.size() <= 400))
+        && data.createdAt is timestamp
+        && data.updatedAt is timestamp;
+    }
+
+    function isValidOrder(data) {
+      return data.keys().hasAll(['orderCode', 'customerId', 'customerName', 'deliveryAddress', 'status', 'paymentStatus', 'paymentMethod', 'itemsTotal', 'deliveryFee', 'totalPaid', 'handoverPin', 'growerIds', 'items', 'createdAt', 'updatedAt'])
+        && data.keys().hasOnly(['orderCode', 'customerId', 'customerName', 'deliveryAddress', 'deliveryLat', 'deliveryLng', 'assignedPartnerId', 'status', 'paymentStatus', 'paymentMethod', 'paymentRef', 'itemsTotal', 'deliveryFee', 'totalPaid', 'handoverPin', 'growerIds', 'items', 'createdAt', 'updatedAt'])
+        && data.orderCode is string && data.orderCode.size() >= 3 && data.orderCode.size() <= 32
+        && isValidId(data.customerId)
+        && data.customerName is string && data.customerName.size() >= 1 && data.customerName.size() <= 120
+        && data.deliveryAddress is string && data.deliveryAddress.size() >= 3 && data.deliveryAddress.size() <= 300
+        && (!('deliveryLat' in data) || (data.deliveryLat is number && data.deliveryLat >= -90 && data.deliveryLat <= 90))
+        && (!('deliveryLng' in data) || (data.deliveryLng is number && data.deliveryLng >= -180 && data.deliveryLng <= 180))
+        && (!('assignedPartnerId' in data) || (data.assignedPartnerId is string && data.assignedPartnerId.size() <= 128))
+        && data.status in ['created', 'confirmed', 'preparing', 'ready_for_pickup', 'out_for_delivery', 'delivered', 'cancelled']
+        && data.paymentStatus in ['pending', 'pending_upi_review', 'verified', 'doorstep_qr', 'failed', 'refunded']
+        && data.paymentMethod is string && data.paymentMethod.size() >= 1 && data.paymentMethod.size() <= 80
+        && (!('paymentRef' in data) || (data.paymentRef is string && data.paymentRef.size() <= 120))
+        && data.itemsTotal is number && data.itemsTotal >= 0 && data.itemsTotal <= 500000
+        && data.deliveryFee is number && data.deliveryFee >= 0 && data.deliveryFee <= 5000
+        && data.totalPaid is number && data.totalPaid >= 0 && data.totalPaid <= 505000
+        && data.totalPaid >= data.itemsTotal
+        && data.handoverPin is string && data.handoverPin.size() == 4
+        && data.growerIds is list && data.growerIds.size() >= 1 && data.growerIds.size() <= 20 && data.growerIds[0] is string
+        && data.items is list && data.items.size() >= 1 && data.items.size() <= 50 && data.items[0] is map
+        && data.createdAt is timestamp
+        && data.updatedAt is timestamp;
+    }
+
+    function isValidSellerOrder(data) {
+      return data.keys().hasAll(['parentOrderId', 'orderCode', 'customerId', 'customerName', 'customerArea', 'growerId', 'farmName', 'status', 'handoverPin', 'grossAmount', 'platformFee', 'netPayout', 'items', 'createdAt', 'updatedAt'])
+        && data.keys().hasOnly(['parentOrderId', 'orderCode', 'customerId', 'customerName', 'customerArea', 'growerId', 'farmName', 'assignedPartnerId', 'status', 'rejectionReason', 'handoverPin', 'sealId', 'grossAmount', 'platformFee', 'netPayout', 'items', 'createdAt', 'updatedAt'])
+        && isValidId(data.parentOrderId)
+        && data.orderCode is string && data.orderCode.size() >= 3 && data.orderCode.size() <= 32
+        && isValidId(data.customerId)
+        && data.customerName is string && data.customerName.size() >= 1 && data.customerName.size() <= 120
+        && data.customerArea is string && data.customerArea.size() >= 1 && data.customerArea.size() <= 200
+        && isValidId(data.growerId)
+        && data.farmName is string && data.farmName.size() >= 2 && data.farmName.size() <= 120
+        && (!('assignedPartnerId' in data) || (data.assignedPartnerId is string && data.assignedPartnerId.size() <= 128))
+        && data.status in ['awaiting_acceptance', 'accepted', 'preparing', 'ready_for_pickup', 'picked_up', 'delivered', 'rejected']
+        && (!('rejectionReason' in data) || (data.rejectionReason is string && data.rejectionReason.size() <= 240))
+        && data.handoverPin is string && data.handoverPin.size() == 4
+        && (!('sealId' in data) || (data.sealId is string && data.sealId.size() <= 32))
+        && data.grossAmount is number && data.grossAmount >= 0 && data.grossAmount <= 500000
+        && data.platformFee is number && data.platformFee >= 0 && data.platformFee <= 100000
+        && data.netPayout is number && data.netPayout >= 0 && data.netPayout <= 500000
+        && data.items is list && data.items.size() >= 1 && data.items.size() <= 50 && data.items[0] is map
+        && data.createdAt is timestamp
+        && data.updatedAt is timestamp;
+    }
+
+    function isValidDeliveryAssignment(data) {
+      return data.keys().hasAll(['parentOrderId', 'sellerOrderId', 'orderCode', 'customerId', 'growerId', 'farmName', 'pickupAddress', 'pickupLat', 'pickupLng', 'dropoffAddress', 'dropoffLat', 'dropoffLng', 'status', 'createdAt', 'updatedAt'])
+        && data.keys().hasOnly(['parentOrderId', 'sellerOrderId', 'orderCode', 'customerId', 'growerId', 'partnerId', 'partnerName', 'farmName', 'pickupAddress', 'pickupLat', 'pickupLng', 'dropoffAddress', 'dropoffLat', 'dropoffLng', 'status', 'pickupVerifiedAt', 'deliveredAt', 'issueNote', 'partnerLat', 'partnerLng', 'lastLocationAt', 'createdAt', 'updatedAt'])
+        && isValidId(data.parentOrderId)
+        && isValidId(data.sellerOrderId)
+        && data.orderCode is string && data.orderCode.size() >= 3 && data.orderCode.size() <= 32
+        && isValidId(data.customerId)
+        && isValidId(data.growerId)
+        && (!('partnerId' in data) || (data.partnerId is string && data.partnerId.size() <= 128))
+        && (!('partnerName' in data) || (data.partnerName is string && data.partnerName.size() <= 120))
+        && data.farmName is string && data.farmName.size() >= 2 && data.farmName.size() <= 120
+        && data.pickupAddress is string && data.pickupAddress.size() >= 2 && data.pickupAddress.size() <= 240
+        && data.pickupLat is number && data.pickupLat >= -90 && data.pickupLat <= 90
+        && data.pickupLng is number && data.pickupLng >= -180 && data.pickupLng <= 180
+        && data.dropoffAddress is string && data.dropoffAddress.size() >= 2 && data.dropoffAddress.size() <= 300
+        && data.dropoffLat is number && data.dropoffLat >= -90 && data.dropoffLat <= 90
+        && data.dropoffLng is number && data.dropoffLng >= -180 && data.dropoffLng <= 180
+        && data.status in ['open', 'accepted', 'picked_up', 'delivered', 'issue_reported']
+        && (!('pickupVerifiedAt' in data) || (data.pickupVerifiedAt is string && data.pickupVerifiedAt.size() <= 64))
+        && (!('deliveredAt' in data) || (data.deliveredAt is string && data.deliveredAt.size() <= 64))
+        && (!('issueNote' in data) || (data.issueNote is string && data.issueNote.size() <= 240))
+        && (!('partnerLat' in data) || (data.partnerLat is number && data.partnerLat >= -90 && data.partnerLat <= 90))
+        && (!('partnerLng' in data) || (data.partnerLng is number && data.partnerLng >= -180 && data.partnerLng <= 180))
+        && (!('lastLocationAt' in data) || (data.lastLocationAt is string && data.lastLocationAt.size() <= 64))
+        && data.createdAt is timestamp
+        && data.updatedAt is timestamp;
+    }
+
+    function isValidSettlement(data) {
+      return data.keys().hasAll(['growerId', 'orderCode', 'summary', 'status', 'gross', 'fee', 'net', 'refNote', 'createdAt', 'updatedAt'])
+        && data.keys().hasOnly(['growerId', 'orderCode', 'summary', 'status', 'isBulk', 'gross', 'fee', 'net', 'refNote', 'createdAt', 'updatedAt'])
+        && isValidId(data.growerId)
+        && data.orderCode is string && data.orderCode.size() >= 3 && data.orderCode.size() <= 32
+        && data.summary is string && data.summary.size() >= 1 && data.summary.size() <= 200
+        && data.status in ['payable', 'settled']
+        && (!('isBulk' in data) || data.isBulk is bool)
+        && data.gross is number && data.gross >= 0 && data.gross <= 500000
+        && data.fee is number && data.fee >= 0 && data.fee <= 100000
+        && data.net is number && data.net >= 0 && data.net <= 500000
+        && (data.net + data.fee) <= (data.gross + 0.02)
+        && (data.net + data.fee) >= (data.gross - 0.02)
+        && data.refNote is string && data.refNote.size() >= 1 && data.refNote.size() <= 120
+        && data.createdAt is timestamp
+        && data.updatedAt is timestamp;
+    }
+
+    function isValidNotification(data) {
+      return data.keys().hasAll(['userId', 'eventType', 'title', 'body', 'targetRole', 'targetScreen', 'unread', 'createdAt'])
+        && data.keys().hasOnly(['userId', 'eventType', 'title', 'body', 'targetRole', 'targetScreen', 'unread', 'createdAt'])
+        && isValidId(data.userId)
+        && isValidNotificationEvent(data.eventType)
+        && data.title is string && data.title.size() >= 1 && data.title.size() <= 120
+        && data.body is string && data.body.size() >= 1 && data.body.size() <= 300
+        && isValidRole(data.targetRole)
+        && data.targetScreen is string && data.targetScreen.size() >= 1 && data.targetScreen.size() <= 64
+        && data.unread is bool
+        && data.createdAt is timestamp;
+    }
+
+    function isValidBulkEnquiry(data) {
+      return data.keys().hasAll(['buyerId', 'organizationName', 'produceName', 'quantityKg', 'frequency', 'deliveryArea', 'status', 'createdAt', 'updatedAt'])
+        && data.keys().hasOnly(['buyerId', 'organizationName', 'produceName', 'quantityKg', 'frequency', 'deliveryArea', 'status', 'quotedGrowerId', 'quotedFarmName', 'quotedPricePerKg', 'quoteNotes', 'createdAt', 'updatedAt'])
+        && isValidId(data.buyerId)
+        && data.organizationName is string && data.organizationName.size() >= 2 && data.organizationName.size() <= 120
+        && data.produceName is string && data.produceName.size() >= 2 && data.produceName.size() <= 120
+        && data.quantityKg is number && data.quantityKg >= 1 && data.quantityKg <= 50000
+        && data.frequency in ['one_time', 'daily', 'weekly']
+        && data.deliveryArea is string && data.deliveryArea.size() >= 2 && data.deliveryArea.size() <= 200
+        && data.status in ['open', 'quoted', 'accepted', 'rejected']
+        && (!('quotedGrowerId' in data) || (data.quotedGrowerId is string && data.quotedGrowerId.size() <= 128))
+        && (!('quotedFarmName' in data) || (data.quotedFarmName is string && data.quotedFarmName.size() <= 120))
+        && (!('quotedPricePerKg' in data) || (data.quotedPricePerKg is number && data.quotedPricePerKg > 0 && data.quotedPricePerKg <= 100000))
+        && (!('quoteNotes' in data) || (data.quoteNotes is string && data.quoteNotes.size() <= 300))
+        && data.createdAt is timestamp
+        && data.updatedAt is timestamp;
+    }
+
+    function isValidAuditLog(data) {
+      return data.keys().hasAll(['actorUid', 'actorEmail', 'action', 'targetCollection', 'targetId', 'reason', 'createdAt'])
+        && data.keys().hasOnly(['actorUid', 'actorEmail', 'action', 'targetCollection', 'targetId', 'reason', 'createdAt'])
+        && data.actorUid == request.auth.uid
+        && data.actorEmail is string && data.actorEmail.size() >= 3 && data.actorEmail.size() <= 200
+        && data.action is string && data.action.size() >= 2 && data.action.size() <= 80
+        && data.targetCollection is string && data.targetCollection.size() >= 2 && data.targetCollection.size() <= 64
+        && data.targetId is string && data.targetId.size() >= 1 && data.targetId.size() <= 128
+        && data.reason is string && data.reason.size() >= 3 && data.reason.size() <= 400
+        && data.createdAt == request.time;
+    }
+
+    function isValidOrderTracking(data, orderId) {
+      return data.keys().hasAll(['orderId', 'assignmentId', 'partnerId', 'lat', 'lng', 'stage', 'trackingActive', 'lastUpdatedAt', 'updatedAt'])
+        && data.keys().hasOnly(['orderId', 'assignmentId', 'partnerId', 'partnerName', 'lat', 'lng', 'accuracy', 'heading', 'speed', 'stage', 'trackingActive', 'lastUpdatedAt', 'updatedAt'])
+        && data.orderId == orderId
+        && isValidId(data.assignmentId)
+        && isValidId(data.partnerId)
+        && (!('partnerName' in data) || (data.partnerName is string && data.partnerName.size() <= 120))
+        && data.lat is number && data.lat >= -90 && data.lat <= 90
+        && data.lng is number && data.lng >= -180 && data.lng <= 180
+        && (!('accuracy' in data) || (data.accuracy is number && data.accuracy >= 0 && data.accuracy <= 10000))
+        && (!('heading' in data) || (data.heading is number && data.heading >= 0 && data.heading <= 360))
+        && (!('speed' in data) || (data.speed is number && data.speed >= 0 && data.speed <= 150))
+        && data.stage in ['assigned', 'en_route_to_pickup', 'picked_up', 'out_for_delivery', 'near_destination', 'arrived', 'delivered', 'cancelled']
+        && data.trackingActive is bool
+        && data.lastUpdatedAt is string && data.lastUpdatedAt.size() >= 10 && data.lastUpdatedAt.size() <= 64
+        && data.updatedAt is timestamp;
+    }
+
+    function isValidOrderEvent(data, orderId) {
+      return data.keys().hasAll(['orderId', 'customerId', 'growerId', 'eventType', 'label', 'actorUid', 'actorRole', 'createdAt'])
+        && data.keys().hasOnly(['orderId', 'customerId', 'growerId', 'partnerId', 'eventType', 'label', 'note', 'actorUid', 'actorRole', 'lat', 'lng', 'createdAt'])
+        && data.orderId == orderId
+        && isValidId(data.customerId)
+        && isValidId(data.growerId)
+        && (!('partnerId' in data) || (data.partnerId is string && data.partnerId.size() <= 128))
+        && data.eventType in [
+          'ORDER_CONFIRMED',
+          'GROWER_PREPARING',
+          'READY_FOR_PICKUP',
+          'PARTNER_ASSIGNED',
+          'PICKED_UP',
+          'OUT_FOR_DELIVERY',
+          'NEAR_DESTINATION',
+          'ARRIVED',
+          'DELIVERED',
+          'DELIVERY_ISSUE',
+          'CANCELLED'
+        ]
+        && data.label is string && data.label.size() >= 1 && data.label.size() <= 120
+        && (!('note' in data) || (data.note is string && data.note.size() <= 300))
+        && data.actorUid == request.auth.uid
+        && data.actorRole in ['customer', 'grower', 'delivery', 'system']
+        && (!('lat' in data) || (data.lat is number && data.lat >= -90 && data.lat <= 90))
+        && (!('lng' in data) || (data.lng is number && data.lng >= -180 && data.lng <= 180))
+        && data.createdAt is timestamp;
+    }
+
+    // -------------------------------------------------------------------------
+    // Collection Match Blocks (Every blueprint path secured)
+    // -------------------------------------------------------------------------
+
+    // 1. Users & Private Subcollections (Wallet balance tamper-proof; PII owner-only)
+    match /users/{userId} {
+      allow get: if isSignedIn() && isValidId(userId) && (request.auth.uid == userId || isOperatorAdmin());
+      allow list: if isOperatorAdmin();
+      allow create: if isVerifiedUser()
+        && isValidId(userId)
+        && request.auth.uid == userId
+        && isValidUser(incoming(), userId)
+        && (!('walletBalance' in incoming()) || incoming().walletBalance == 0)
+        && incoming().createdAt == request.time
+        && incoming().updatedAt == request.time;
+      allow update: if isVerifiedUser()
+        && isValidId(userId)
+        && isValidUser(incoming(), userId)
+        && incoming().createdAt == existing().createdAt
+        && incoming().updatedAt == request.time
+        && (
+          // Action 1: Owner updates profile or debits own wallet (NEVER increases walletBalance)
+          (
+            request.auth.uid == userId
+            && (
+              !('walletBalance' in incoming())
+              || (
+                'walletBalance' in existing()
+                && incoming().walletBalance <= existing().walletBalance
+              )
+              || (
+                !('walletBalance' in existing())
+                && incoming().walletBalance == 0
+              )
+            )
+            && incoming().diff(existing()).affectedKeys().hasOnly([
+              'displayName', 'phone', 'activeRole', 'photoURL',
+              'avatarType', 'avatarPreset', 'customAvatarData', 'city', 'bio',
+              'deliveryNote', 'organizationName', 'defaultAddressId', 'profileCompleted',
+              'walletBalance', 'savedUpiId', 'language', 'favoriteGrowerIds',
+              'registeredPortals', 'updatedAt'
+            ])
+          )
+          ||
+          // Action 2: Authorized operator credits verified wallet top-up / refund
+          (
+            isOperatorAdmin()
+            && incoming().diff(existing()).affectedKeys().hasOnly(['walletBalance', 'updatedAt'])
+          )
+        );
+      allow delete: if false;
+
+      match /addresses/{addressId} {
+        allow get: if isSignedIn() && isValidId(userId) && isValidId(addressId) && request.auth.uid == userId;
+        allow list: if isSignedIn() && isValidId(userId) && request.auth.uid == userId && resource.data.userId == request.auth.uid;
+        allow create: if isVerifiedUser()
+          && isValidId(userId)
+          && isValidId(addressId)
+          && request.auth.uid == userId
+          && isValidAddress(incoming(), userId)
+          && incoming().createdAt == request.time
+          && incoming().updatedAt == request.time
+          && exists(/databases/$(database)/documents/users/$(userId));
+        allow update: if isVerifiedUser()
+          && isValidId(userId)
+          && isValidId(addressId)
+          && request.auth.uid == userId
+          && isValidAddress(incoming(), userId)
+          && incoming().createdAt == existing().createdAt
+          && incoming().updatedAt == request.time
+          && incoming().diff(existing()).affectedKeys().hasOnly(['label', 'formattedAddress', 'lat', 'lng', 'serviceable', 'updatedAt']);
+        allow delete: if isVerifiedUser() && isValidId(userId) && isValidId(addressId) && request.auth.uid == userId;
+      }
+
+      match /cart/{itemId} {
+        allow get: if isSignedIn() && isValidId(userId) && isValidId(itemId) && request.auth.uid == userId;
+        allow list: if isSignedIn() && isValidId(userId) && request.auth.uid == userId && resource.data.userId == request.auth.uid;
+        allow create: if isVerifiedUser()
+          && isValidId(userId)
+          && isValidId(itemId)
+          && request.auth.uid == userId
+          && isValidCartItem(incoming(), userId)
+          && incoming().updatedAt == request.time
+          && exists(/databases/$(database)/documents/products/$(incoming().productId));
+        allow update: if isVerifiedUser()
+          && isValidId(userId)
+          && isValidId(itemId)
+          && request.auth.uid == userId
+          && isValidCartItem(incoming(), userId)
+          && incoming().productId == existing().productId
+          && incoming().growerId == existing().growerId
+          && incoming().updatedAt == request.time
+          && incoming().diff(existing()).affectedKeys().hasOnly(['quantity', 'updatedAt']);
+        allow delete: if isVerifiedUser() && isValidId(userId) && isValidId(itemId) && request.auth.uid == userId;
+      }
+
+      match /support_tickets/{ticketId} {
+        allow get: if isSignedIn() && isValidId(userId) && isValidId(ticketId) && (request.auth.uid == userId || isOperatorAdmin());
+        allow list: if isSignedIn() && isValidId(userId) && ((request.auth.uid == userId && resource.data.userId == request.auth.uid) || isOperatorAdmin());
+        allow create: if isVerifiedUser()
+          && isValidId(userId)
+          && isValidId(ticketId)
+          && request.auth.uid == userId
+          && isValidSupportTicket(incoming(), userId)
+          && incoming().status == 'open'
+          && incoming().createdAt == request.time
+          && incoming().updatedAt == request.time
+          && exists(/databases/$(database)/documents/users/$(userId));
+        allow update: if isVerifiedUser()
+          && isValidId(userId)
+          && isValidId(ticketId)
+          && (request.auth.uid == userId || isOperatorAdmin())
+          && isValidSupportTicket(incoming(), userId)
+          && incoming().createdAt == existing().createdAt
+          && incoming().updatedAt == request.time
+          && existing().status != 'resolved'
+          && incoming().status == 'resolved'
+          && incoming().diff(existing()).affectedKeys().hasOnly(['status', 'updatedAt']);
+        allow delete: if isVerifiedUser() && isValidId(userId) && isValidId(ticketId) && request.auth.uid == userId;
+      }
+
+      match /wallet_transactions/{txId} {
+        allow get: if isSignedIn() && isValidId(userId) && isValidId(txId) && (request.auth.uid == userId || isOperatorAdmin());
+        allow list: if isSignedIn() && isValidId(userId) && ((request.auth.uid == userId && resource.data.userId == request.auth.uid) || isOperatorAdmin());
+        allow create: if isVerifiedUser()
+          && isValidId(userId)
+          && isValidId(txId)
+          && isValidWalletTransaction(incoming(), userId)
+          && incoming().createdAt == request.time
+          && exists(/databases/$(database)/documents/users/$(userId))
+          && (
+            // Owner may log a PENDING top-up verification request OR a debit/escrow hold — NEVER self-credit or self-refund
+            (
+              request.auth.uid == userId
+              && (
+                (incoming().type == 'topup' && incoming().status == 'pending_verification')
+                || (incoming().type in ['order_debit', 'escrow_hold'] && (!('status' in incoming()) || incoming().status == 'completed'))
+              )
+            )
+            ||
+            // Authorized operator may log verified credits or refunds
+            isOperatorAdmin()
+          );
+        allow update: if isOperatorAdmin()
+          && isValidId(userId)
+          && isValidId(txId)
+          && isValidWalletTransaction(incoming(), userId)
+          && incoming().userId == existing().userId
+          && incoming().amount == existing().amount
+          && incoming().createdAt == existing().createdAt
+          && incoming().diff(existing()).affectedKeys().hasOnly(['status', 'note']);
+        allow delete: if false;
+      }
+    }
+
+    // 2. Public Grower Storefront Profiles (ZERO private KYC PII; NO client self-approval)
+    match /grower_profiles/{growerId} {
+      allow get: if isSignedIn() && isValidId(growerId);
+      allow list: if isSignedIn() && (resource.data.verificationStatus in ['pending', 'verified'] || isOperatorAdmin());
+      allow create: if isVerifiedUser()
+        && isValidId(growerId)
+        && request.auth.uid == growerId
+        && isValidGrowerProfile(incoming(), growerId)
+        && incoming().verificationStatus == 'pending'
+        && incoming().createdAt == request.time
+        && incoming().updatedAt == request.time;
+      allow update: if isVerifiedUser()
+        && isValidId(growerId)
+        && isValidGrowerProfile(incoming(), growerId)
+        && incoming().ownerId == existing().ownerId
+        && incoming().createdAt == existing().createdAt
+        && incoming().updatedAt == request.time
+        && (
+          // Action 1: Owner edits storefront info (CANNOT self-approve to 'verified')
+          (
+            request.auth.uid == growerId
+            && (
+              incoming().verificationStatus == existing().verificationStatus
+              || (existing().verificationStatus == 'correction_needed' && incoming().verificationStatus == 'pending')
+            )
+            && incoming().diff(existing()).affectedKeys().hasOnly([
+              'farmName', 'growerName', 'farmType', 'areaName', 'lat', 'lng',
+              'fssaiNumber', 'livenessConfirmed', 'chemicalFree', 'verificationStatus', 'updatedAt'
+            ])
+          )
+          ||
+          // Action 2: Authorized operator updates verification status
+          (
+            isOperatorAdmin()
+            && incoming().diff(existing()).affectedKeys().hasOnly(['verificationStatus', 'updatedAt'])
+          )
+        );
+      allow delete: if false;
+    }
+
+    // 2b. Private Grower KYC Records (STRICTLY owner-only + authorized operator; NO self-approval)
+    match /grower_kyc/{growerId} {
+      allow get: if isSignedIn() && isValidId(growerId) && (request.auth.uid == growerId || isOperatorAdmin());
+      allow list: if isOperatorAdmin();
+      allow create: if isVerifiedUser()
+        && isValidId(growerId)
+        && request.auth.uid == growerId
+        && isValidGrowerKyc(incoming(), growerId)
+        && incoming().reviewStatus == 'pending'
+        && incoming().createdAt == request.time
+        && incoming().updatedAt == request.time;
+      allow update: if isVerifiedUser()
+        && isValidId(growerId)
+        && isValidGrowerKyc(incoming(), growerId)
+        && incoming().ownerId == existing().ownerId
+        && incoming().createdAt == existing().createdAt
+        && incoming().updatedAt == request.time
+        && (
+          // Owner may resubmit KYC details (resets/keeps pending — NEVER sets verified)
+          (
+            request.auth.uid == growerId
+            && incoming().reviewStatus == 'pending'
+            && incoming().diff(existing()).affectedKeys().hasOnly([
+              'phone', 'fssaiNumber', 'govIdType', 'govIdLast4',
+              'liveSelfieData', 'farmPhotoData', 'livePhotoCapturedAt',
+              'livenessConfirmed', 'reviewStatus', 'updatedAt'
+            ])
+          )
+          ||
+          // Authorized operator approves, rejects, or requests correction
+          (
+            isOperatorAdmin()
+            && incoming().diff(existing()).affectedKeys().hasOnly(['reviewStatus', 'reviewNote', 'updatedAt'])
+          )
+        );
+      allow delete: if false;
+    }
+
+    // 3. Delivery Profiles (owner-only PII + availability + live photo KYC; NO self-approval)
+    match /delivery_profiles/{partnerId} {
+      allow get: if isSignedIn() && isValidId(partnerId) && (request.auth.uid == partnerId || isOperatorAdmin());
+      allow list: if isSignedIn() && (resource.data.userId == request.auth.uid || isOperatorAdmin());
+      allow create: if isVerifiedUser()
+        && isValidId(partnerId)
+        && request.auth.uid == partnerId
+        && isValidDeliveryProfile(incoming(), partnerId)
+        && incoming().kycStatus == 'submitted'
+        && incoming().createdAt == request.time
+        && incoming().updatedAt == request.time;
+      allow update: if isVerifiedUser()
+        && isValidId(partnerId)
+        && isValidDeliveryProfile(incoming(), partnerId)
+        && incoming().userId == existing().userId
+        && incoming().createdAt == existing().createdAt
+        && incoming().updatedAt == request.time
+        && (
+          // Action 1: Owner updates vehicle/KYC/availability (CANNOT self-approve kycStatus to 'verified')
+          (
+            request.auth.uid == partnerId
+            && (
+              incoming().kycStatus == existing().kycStatus
+              || (existing().kycStatus == 'rejected' && incoming().kycStatus == 'submitted')
+            )
+            && incoming().diff(existing()).affectedKeys().hasOnly([
+              'partnerName', 'phone', 'emergencyPhone', 'vehicleType', 'vehiclePlate',
+              'dlNumber', 'govIdType', 'govIdLast4', 'liveSelfieData', 'idDocumentPhotoData',
+              'livePhotoCapturedAt', 'livenessConfirmed', 'clusterArea',
+              'availableForDispatch', 'kycStatus', 'updatedAt'
+            ])
+          )
+          ||
+          // Action 2: Authorized operator verifies or rejects KYC
+          (
+            isOperatorAdmin()
+            && incoming().diff(existing()).affectedKeys().hasOnly(['kycStatus', 'reviewNote', 'updatedAt'])
+          )
+        );
+      allow delete: if false;
+    }
+
+    // 4. Products Catalog (readable by signed-in marketplace users; owner edits; atomic checkout stock reserve)
+    match /products/{productId} {
+      allow get: if isSignedIn() && isValidId(productId);
+      allow list: if isSignedIn() && (resource.data.available == true || resource.data.growerId == request.auth.uid || isOperatorAdmin());
+      allow create: if isVerifiedUser()
+        && isValidId(productId)
+        && isValidProduct(incoming())
+        && incoming().growerId == request.auth.uid
+        && incoming().createdAt == request.time
+        && incoming().updatedAt == request.time;
+      allow update: if isVerifiedUser()
+        && isValidId(productId)
+        && isValidProduct(incoming())
+        && incoming().growerId == existing().growerId
+        && incoming().createdAt == existing().createdAt
+        && incoming().updatedAt == request.time
+        && (
+          // Action 1: Grower owner edits listing details, price, stock, availability
+          (
+            existing().growerId == request.auth.uid
+            && incoming().diff(existing()).affectedKeys().hasOnly(['name', 'variety', 'category', 'bedLabel', 'price', 'unit', 'unitShort', 'stock', 'reserved', 'harvestedAt', 'available', 'chemicalFree', 'harvestedToday', 'image', 'growerNote', 'updatedAt'])
+          )
+          ||
+          // Action 2: Customer atomic checkout reservation (stock strictly decrements, reserved increments by exact same delta)
+          (
+            existing().available == true
+            && incoming().stock < existing().stock
+            && incoming().stock >= 0
+            && (existing().stock - incoming().stock) == (incoming().reserved - existing().reserved)
+            && incoming().diff(existing()).affectedKeys().hasOnly(['stock', 'reserved', 'available', 'updatedAt'])
+          )
+          ||
+          // Action 3: Authorized operator moderation (pause/delist abusive listing)
+          (
+            isOperatorAdmin()
+            && incoming().diff(existing()).affectedKeys().hasOnly(['available', 'updatedAt'])
+          )
+        );
+      allow delete: if isVerifiedUser() && isValidId(productId) && (existing().growerId == request.auth.uid || isOperatorAdmin());
+    }
+
+    // 5. Parent Customer Orders (Strict paymentStatus immutability & assigned-partner-only delivery writes)
+    match /orders/{orderId} {
+      allow get: if isSignedIn() && isValidId(orderId) && (
+        existing().customerId == request.auth.uid
+        || request.auth.uid in existing().growerIds
+        || ('assignedPartnerId' in existing() && existing().assignedPartnerId == request.auth.uid)
+        || isOperatorAdmin()
+      );
+      allow list: if isSignedIn() && (
+        resource.data.customerId == request.auth.uid
+        || request.auth.uid in resource.data.growerIds
+        || ('assignedPartnerId' in resource.data && resource.data.assignedPartnerId == request.auth.uid)
+        || isOperatorAdmin()
+      );
+      allow create: if isVerifiedUser()
+        && isValidId(orderId)
+        && isValidOrder(incoming())
+        && incoming().customerId == request.auth.uid
+        && incoming().status in ['created', 'confirmed']
+        // Client cannot forge verified payment without genuine gateway/wallet prefix; manual UPI stays pending_upi_review
+        && (
+          incoming().paymentStatus in ['pending', 'pending_upi_review', 'doorstep_qr']
+          || (
+            incoming().paymentStatus == 'verified'
+            && 'paymentRef' in incoming()
+            && (incoming().paymentRef.matches('^pay_[a-zA-Z0-9_]+$') || incoming().paymentRef.matches('^wallet_ZVG-[0-9]+$'))
+          )
+        )
+        && incoming().createdAt == request.time
+        && incoming().updatedAt == request.time;
+      allow update: if isVerifiedUser()
+        && isValidId(orderId)
+        && isValidOrder(incoming())
+        && incoming().customerId == existing().customerId
+        && incoming().orderCode == existing().orderCode
+        && incoming().itemsTotal == existing().itemsTotal
+        && incoming().deliveryFee == existing().deliveryFee
+        && incoming().totalPaid == existing().totalPaid
+        && incoming().createdAt == existing().createdAt
+        && incoming().updatedAt == request.time
+        && !(existing().status in ['delivered', 'cancelled'])
+        && (
+          // Action 1: Customer may ONLY cancel before preparation/pickup (NEVER mutate paymentStatus/paymentRef)
+          (
+            existing().customerId == request.auth.uid
+            && existing().status in ['created', 'confirmed']
+            && incoming().status == 'cancelled'
+            && incoming().diff(existing()).affectedKeys().hasOnly(['status', 'updatedAt'])
+          )
+          ||
+          // Action 2: Participating grower advances preparation status
+          (
+            request.auth.uid in existing().growerIds
+            && incoming().status in ['preparing', 'ready_for_pickup']
+            && incoming().diff(existing()).affectedKeys().hasOnly(['status', 'updatedAt'])
+          )
+          ||
+          // Action 3: Verified delivery partner binds self on acceptance OR updates status once assigned
+          (
+            isVerifiedDeliveryPartner()
+            && (
+              (
+                !('assignedPartnerId' in existing())
+                && incoming().assignedPartnerId == request.auth.uid
+                && incoming().diff(existing()).affectedKeys().hasOnly(['assignedPartnerId', 'updatedAt'])
+              )
+              ||
+              (
+                'assignedPartnerId' in existing()
+                && existing().assignedPartnerId == request.auth.uid
+                && incoming().assignedPartnerId == existing().assignedPartnerId
+                && incoming().status in ['out_for_delivery', 'delivered']
+                && incoming().diff(existing()).affectedKeys().hasOnly(['status', 'updatedAt'])
+              )
+            )
+          )
+          ||
+          // Action 4: Authorized operator payment verification / dispute override / refund mark
+          (
+            isOperatorAdmin()
+            && incoming().diff(existing()).affectedKeys().hasOnly(['status', 'paymentStatus', 'paymentRef', 'assignedPartnerId', 'updatedAt'])
+          )
+        );
+      allow delete: if false;
+
+      // 5a. Live GPS Telemetry Snapshot (/orders/{orderId}/tracking/current)
+      match /tracking/{trackingDocId} {
+        allow get: if isSignedIn()
+          && isValidId(orderId)
+          && trackingDocId == 'current'
+          && exists(/databases/$(database)/documents/orders/$(orderId))
+          && (
+            get(/databases/$(database)/documents/orders/$(orderId)).data.customerId == request.auth.uid
+            || request.auth.uid in get(/databases/$(database)/documents/orders/$(orderId)).data.growerIds
+            || (
+              'assignedPartnerId' in get(/databases/$(database)/documents/orders/$(orderId)).data
+              && get(/databases/$(database)/documents/orders/$(orderId)).data.assignedPartnerId == request.auth.uid
+            )
+            || isOperatorAdmin()
+          );
+        allow list: if false;
+        allow create: if isVerifiedDeliveryPartner()
+          && isValidId(orderId)
+          && trackingDocId == 'current'
+          && isValidOrderTracking(incoming(), orderId)
+          && incoming().partnerId == request.auth.uid
+          && incoming().updatedAt == request.time
+          && existsAfter(/databases/$(database)/documents/orders/$(orderId))
+          && 'assignedPartnerId' in getAfter(/databases/$(database)/documents/orders/$(orderId)).data
+          && getAfter(/databases/$(database)/documents/orders/$(orderId)).data.assignedPartnerId == request.auth.uid
+          && (
+            !(getAfter(/databases/$(database)/documents/orders/$(orderId)).data.status in ['delivered', 'cancelled'])
+            || (incoming().trackingActive == false && incoming().stage in ['delivered', 'cancelled'])
+          );
+        allow update: if isVerifiedDeliveryPartner()
+          && isValidId(orderId)
+          && trackingDocId == 'current'
+          && isValidOrderTracking(incoming(), orderId)
+          && incoming().orderId == existing().orderId
+          && incoming().partnerId == existing().partnerId
+          && incoming().partnerId == request.auth.uid
+          && incoming().updatedAt == request.time
+          && existsAfter(/databases/$(database)/documents/orders/$(orderId))
+          && 'assignedPartnerId' in getAfter(/databases/$(database)/documents/orders/$(orderId)).data
+          && getAfter(/databases/$(database)/documents/orders/$(orderId)).data.assignedPartnerId == request.auth.uid
+          && (
+            !(getAfter(/databases/$(database)/documents/orders/$(orderId)).data.status in ['delivered', 'cancelled'])
+            || (incoming().trackingActive == false && incoming().stage in ['delivered', 'cancelled'])
+          )
+          && incoming().diff(existing()).affectedKeys().hasOnly([
+            'assignmentId', 'partnerName', 'lat', 'lng', 'accuracy', 'heading', 'speed',
+            'stage', 'trackingActive', 'lastUpdatedAt', 'updatedAt'
+          ]);
+        allow delete: if false;
+      }
+
+      // 5b. Append-Only Order Delivery Events (/orders/{orderId}/orderEvents/{eventId})
+      match /orderEvents/{eventId} {
+        allow get: if isSignedIn()
+          && isValidId(orderId)
+          && isValidId(eventId)
+          && (
+            existing().customerId == request.auth.uid
+            || existing().growerId == request.auth.uid
+            || ('partnerId' in existing() && existing().partnerId == request.auth.uid)
+            || isOperatorAdmin()
+          );
+        allow list: if isSignedIn()
+          && isValidId(orderId)
+          && (
+            resource.data.customerId == request.auth.uid
+            || resource.data.growerId == request.auth.uid
+            || ('partnerId' in resource.data && resource.data.partnerId == request.auth.uid)
+            || isOperatorAdmin()
+          );
+        allow create: if isVerifiedUser()
+          && isValidId(orderId)
+          && isValidId(eventId)
+          && isValidOrderEvent(incoming(), orderId)
+          && incoming().createdAt == request.time
+          && existsAfter(/databases/$(database)/documents/orders/$(orderId))
+          && incoming().customerId == getAfter(/databases/$(database)/documents/orders/$(orderId)).data.customerId
+          && incoming().growerId in getAfter(/databases/$(database)/documents/orders/$(orderId)).data.growerIds
+          && (
+            getAfter(/databases/$(database)/documents/orders/$(orderId)).data.customerId == request.auth.uid
+            || request.auth.uid in getAfter(/databases/$(database)/documents/orders/$(orderId)).data.growerIds
+            || (
+              isVerifiedDeliveryPartner()
+              && 'assignedPartnerId' in getAfter(/databases/$(database)/documents/orders/$(orderId)).data
+              && getAfter(/databases/$(database)/documents/orders/$(orderId)).data.assignedPartnerId == request.auth.uid
+            )
+            || isOperatorAdmin()
+          );
+        allow update, delete: if false;
+      }
+    }
+
+    // 6. Per-Grower Seller Fulfilment Orders (Verified & assigned partner enforcement)
+    match /seller_orders/{sellerOrderId} {
+      allow get: if isSignedIn() && isValidId(sellerOrderId) && (
+        existing().customerId == request.auth.uid
+        || existing().growerId == request.auth.uid
+        || ('assignedPartnerId' in existing() && existing().assignedPartnerId == request.auth.uid)
+        || (existing().status == 'ready_for_pickup' && isVerifiedDeliveryPartner())
+        || isOperatorAdmin()
+      );
+      allow list: if isSignedIn() && (
+        resource.data.customerId == request.auth.uid
+        || resource.data.growerId == request.auth.uid
+        || (resource.data.status == 'ready_for_pickup' && isVerifiedDeliveryPartner())
+        || ('assignedPartnerId' in resource.data && resource.data.assignedPartnerId == request.auth.uid)
+        || isOperatorAdmin()
+      );
+      allow create: if isVerifiedUser()
+        && isValidId(sellerOrderId)
+        && isValidSellerOrder(incoming())
+        && incoming().customerId == request.auth.uid
+        && incoming().status == 'awaiting_acceptance'
+        && incoming().createdAt == request.time
+        && incoming().updatedAt == request.time
+        && existsAfter(/databases/$(database)/documents/orders/$(incoming().parentOrderId));
+      allow update: if isVerifiedUser()
+        && isValidId(sellerOrderId)
+        && isValidSellerOrder(incoming())
+        && incoming().parentOrderId == existing().parentOrderId
+        && incoming().customerId == existing().customerId
+        && incoming().growerId == existing().growerId
+        && incoming().grossAmount == existing().grossAmount
+        && incoming().platformFee == existing().platformFee
+        && incoming().netPayout == existing().netPayout
+        && incoming().createdAt == existing().createdAt
+        && incoming().updatedAt == request.time
+        && !(existing().status in ['delivered', 'rejected'])
+        && (
+          // Action 1: Grower accepts, prepares, marks ready, or rejects with reason
+          (
+            existing().growerId == request.auth.uid
+            && incoming().status in ['accepted', 'preparing', 'ready_for_pickup', 'rejected']
+            && incoming().diff(existing()).affectedKeys().hasOnly(['status', 'rejectionReason', 'sealId', 'updatedAt'])
+          )
+          ||
+          // Action 2: Verified delivery partner claims unassigned ready order OR progresses own assigned order
+          (
+            isVerifiedDeliveryPartner()
+            && (
+              (
+                existing().status == 'ready_for_pickup'
+                && !('assignedPartnerId' in existing())
+                && incoming().assignedPartnerId == request.auth.uid
+                && incoming().status == existing().status
+                && incoming().diff(existing()).affectedKeys().hasOnly(['assignedPartnerId', 'updatedAt'])
+              )
+              ||
+              (
+                'assignedPartnerId' in existing()
+                && existing().assignedPartnerId == request.auth.uid
+                && incoming().assignedPartnerId == existing().assignedPartnerId
+                && incoming().status in ['picked_up', 'delivered']
+                && incoming().diff(existing()).affectedKeys().hasOnly(['status', 'updatedAt'])
+              )
+            )
+          )
+          ||
+          // Action 3: Authorized operator override
+          (
+            isOperatorAdmin()
+            && incoming().diff(existing()).affectedKeys().hasOnly(['status', 'assignedPartnerId', 'rejectionReason', 'updatedAt'])
+          )
+        );
+      allow delete: if false;
+    }
+
+    // 7. Delivery Assignments (Open board restricted strictly to verified delivery partners — stops dropoff PII leak)
+    match /delivery_assignments/{assignmentId} {
+      allow get: if isSignedIn() && isValidId(assignmentId) && (
+        existing().customerId == request.auth.uid
+        || existing().growerId == request.auth.uid
+        || ('partnerId' in existing() && existing().partnerId == request.auth.uid)
+        || (existing().status == 'open' && isVerifiedDeliveryPartner())
+        || isOperatorAdmin()
+      );
+      allow list: if isSignedIn() && (
+        resource.data.customerId == request.auth.uid
+        || resource.data.growerId == request.auth.uid
+        || (resource.data.status == 'open' && isVerifiedDeliveryPartner())
+        || ('partnerId' in resource.data && resource.data.partnerId == request.auth.uid)
+        || isOperatorAdmin()
+      );
+      allow create: if isVerifiedUser()
+        && isValidId(assignmentId)
+        && isValidDeliveryAssignment(incoming())
+        && incoming().growerId == request.auth.uid
+        && incoming().status == 'open'
+        && incoming().createdAt == request.time
+        && incoming().updatedAt == request.time
+        && exists(/databases/$(database)/documents/seller_orders/$(incoming().sellerOrderId));
+      allow update: if isVerifiedUser()
+        && isValidId(assignmentId)
+        && isValidDeliveryAssignment(incoming())
+        && incoming().parentOrderId == existing().parentOrderId
+        && incoming().sellerOrderId == existing().sellerOrderId
+        && incoming().customerId == existing().customerId
+        && incoming().growerId == existing().growerId
+        && incoming().createdAt == existing().createdAt
+        && incoming().updatedAt == request.time
+        && existing().status != 'delivered'
+        && (
+          // Action 1: Verified delivery partner accepts open assignment
+          (
+            existing().status == 'open'
+            && incoming().status == 'accepted'
+            && incoming().partnerId == request.auth.uid
+            && isVerifiedDeliveryPartner()
+            && incoming().diff(existing()).affectedKeys().hasOnly(['status', 'partnerId', 'partnerName', 'updatedAt'])
+          )
+          ||
+          // Action 2: Assigned verified delivery partner verifies pickup, streams live GPS, completes delivery, or reports issue
+          (
+            isVerifiedDeliveryPartner()
+            && 'partnerId' in existing()
+            && existing().partnerId == request.auth.uid
+            && incoming().partnerId == existing().partnerId
+            && incoming().diff(existing()).affectedKeys().hasOnly(['status', 'pickupVerifiedAt', 'deliveredAt', 'issueNote', 'partnerLat', 'partnerLng', 'lastLocationAt', 'updatedAt'])
+          )
+          ||
+          // Action 3: Authorized operator dispatch override
+          (
+            isOperatorAdmin()
+            && incoming().diff(existing()).affectedKeys().hasOnly(['status', 'partnerId', 'partnerName', 'issueNote', 'updatedAt'])
+          )
+        );
+      allow delete: if false;
+    }
+
+    // 8. Grower Settlements Ledger (Growers READ-ONLY; ONLY verified delivery completion creates 'payable'; ONLY operator marks 'settled')
+    match /settlements/{settlementId} {
+      allow get: if isSignedIn() && isValidId(settlementId) && (existing().growerId == request.auth.uid || isOperatorAdmin());
+      allow list: if isSignedIn() && (resource.data.growerId == request.auth.uid || isOperatorAdmin());
+      allow create: if isVerifiedUser()
+        && isValidId(settlementId)
+        && isValidSettlement(incoming())
+        && incoming().status == 'payable'
+        && (isVerifiedDeliveryPartner() || isOperatorAdmin())
+        && incoming().createdAt == request.time
+        && incoming().updatedAt == request.time;
+      allow update: if isOperatorAdmin()
+        && isValidId(settlementId)
+        && isValidSettlement(incoming())
+        && incoming().growerId == existing().growerId
+        && incoming().gross == existing().gross
+        && incoming().fee == existing().fee
+        && incoming().net == existing().net
+        && incoming().createdAt == existing().createdAt
+        && incoming().updatedAt == request.time
+        && existing().status != 'settled'
+        && incoming().diff(existing()).affectedKeys().hasOnly(['status', 'refNote', 'updatedAt']);
+      allow delete: if false;
+    }
+
+    // 9. User-Scoped Event Notifications (Strict business event allowlist)
+    match /notifications/{notificationId} {
+      allow get: if isSignedIn() && isValidId(notificationId) && existing().userId == request.auth.uid;
+      allow list: if isSignedIn() && resource.data.userId == request.auth.uid;
+      allow create: if isVerifiedUser()
+        && isValidId(notificationId)
+        && isValidNotification(incoming())
+        && incoming().createdAt == request.time;
+      allow update: if isVerifiedUser()
+        && isValidId(notificationId)
+        && existing().userId == request.auth.uid
+        && isValidNotification(incoming())
+        && incoming().userId == existing().userId
+        && incoming().createdAt == existing().createdAt
+        && incoming().diff(existing()).affectedKeys().hasOnly(['unread']);
+      allow delete: if isVerifiedUser() && isValidId(notificationId) && existing().userId == request.auth.uid;
+    }
+
+    // 10. Institutional / Bulk Enquiries & Quotations
+    match /bulk_enquiries/{enquiryId} {
+      allow get: if isSignedIn() && isValidId(enquiryId) && (
+        existing().buyerId == request.auth.uid
+        || existing().status == 'open'
+        || ('quotedGrowerId' in existing() && existing().quotedGrowerId == request.auth.uid)
+        || isOperatorAdmin()
+      );
+      allow list: if isSignedIn() && (
+        resource.data.buyerId == request.auth.uid
+        || resource.data.status == 'open'
+        || ('quotedGrowerId' in resource.data && resource.data.quotedGrowerId == request.auth.uid)
+        || isOperatorAdmin()
+      );
+      allow create: if isVerifiedUser()
+        && isValidId(enquiryId)
+        && isValidBulkEnquiry(incoming())
+        && incoming().buyerId == request.auth.uid
+        && incoming().status == 'open'
+        && incoming().createdAt == request.time
+        && incoming().updatedAt == request.time;
+      allow update: if isVerifiedUser()
+        && isValidId(enquiryId)
+        && isValidBulkEnquiry(incoming())
+        && incoming().buyerId == existing().buyerId
+        && incoming().createdAt == existing().createdAt
+        && incoming().updatedAt == request.time
+        && !(existing().status in ['accepted', 'rejected'])
+        && (
+          // Action 1: Grower submits a wholesale quote on an open enquiry
+          (
+            existing().status == 'open'
+            && incoming().status == 'quoted'
+            && incoming().quotedGrowerId == request.auth.uid
+            && incoming().diff(existing()).affectedKeys().hasOnly(['status', 'quotedGrowerId', 'quotedFarmName', 'quotedPricePerKg', 'quoteNotes', 'updatedAt'])
+          )
+          ||
+          // Action 2: Institutional buyer accepts or rejects a quote
+          (
+            existing().buyerId == request.auth.uid
+            && incoming().status in ['accepted', 'rejected']
+            && incoming().diff(existing()).affectedKeys().hasOnly(['status', 'updatedAt'])
+          )
+        );
+      allow delete: if false;
+    }
+
+    // 11. Operator Audit Logs (Append-only; strictly invisible to public marketplace users)
+    match /audit_logs/{logId} {
+      allow get, list: if isOperatorAdmin();
+      allow create: if isOperatorAdmin() && isValidId(logId) && isValidAuditLog(incoming());
+      allow update, delete: if false;
+    }
+
+    // 12. Platform Operational Settings (Read-only for signed-in users; operator-only writes)
+    match /platform_settings/{settingId} {
+      allow get, list: if isSignedIn();
+      allow create, update: if isOperatorAdmin() && isValidId(settingId) && incoming().updatedAt == request.time;
+      allow delete: if false;
+    }
+  }
+}

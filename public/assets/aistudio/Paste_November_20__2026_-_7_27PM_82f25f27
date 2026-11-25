@@ -1,0 +1,2298 @@
+# **ZENVEGO — COMPLETE FINAL PROJECT WORKFLOW**
+
+
+
+Master Project Blueprint
+
+End-to-End System
+
+
+
+**Project:** ZENVEGO – AI-Powered Hyperlocal Marketplace for Connecting Local Growers and Consumers
+
+**Tagline:** Grow Local. Buy Fresh. Deliver Fast.
+
+This is the complete end-to-end blueprint covering the business, website, applications, customers, growers, small farmers, delivery partners, administrators, AI, database, authentication, payments, orders, logistics, tracking, security, deployment and future expansion.
+
+The objective is to build ZENVEGO as an actual working marketplace, not just a frontend demonstration or college project.
+
+## **1. What exactly is ZENVEGO?**
+
+ZENVEGO is an AI-enabled hyperlocal agricultural marketplace that connects:
+
+1. Urban and terrace gardeners.
+2. Home growers.
+3. Small-scale farmers.
+4. Local agricultural producers.
+5. Women growers and independent sellers.
+6. Consumers.
+7. Delivery partners.
+
+It allows people who grow fresh produce locally to sell directly to nearby customers through one digital platform.
+
+Instead of customers depending entirely on traditional supply chains, they can discover nearby producers, explore available products, place orders, pay, and receive deliveries.
+
+ZENVEGO handles the digital marketplace, seller verification, product discovery, order management, payment coordination, delivery coordination, tracking, customer support and business analytics.
+
+**Important distinction:** ZENVEGO is not simply a vegetable delivery application. It is a hyperlocal producer-to-consumer marketplace with a logistics and technology layer.
+
+## **2. Complete ecosystem**
+
+## **ZENVEGO ecosystem**
+
+# **ZENVEGO PLATFORM**
+
+One centralized marketplace and management system
+
+**Customers**
+
+Discover and purchase produce
+
+**Growers**
+
+List and sell fresh produce
+
+**Delivery partners**
+
+Pickup and deliver orders
+
+**Administrators**
+
+Manage the complete platform
+
+**Shared infrastructure**
+
+Backend · Database · Authentication · AI · Payments · Maps · Notifications · Analytics
+
+There will be four primary user roles:
+
+| Role             | Main responsibility            |
+| ---------------- | ------------------------------ |
+| Customer         | Purchase local products        |
+| Grower/Seller    | Sell agricultural produce      |
+| Delivery partner | Fulfil deliveries              |
+| Admin            | Control and monitor operations |
+
+A customer and grower can use the same main ZENVEGO application with role-based dashboards.
+
+The delivery interface should be a separate application/interface, and the admin interface should be separately protected.
+
+## **3. Complete application structure**
+
+**1. ZENVEGO Main**
+
+Customer + Grower
+
+Main marketplace application
+
+- Landing page
+- Customer registration/login
+- Grower registration/login
+- Product marketplace
+- Search and categories
+- AI voice assistant
+- Cart and checkout
+- Orders and tracking
+- Grower dashboard
+- Customer profile
+
+**2. ZENVEGO Delivery**
+
+Delivery partners
+
+Dedicated delivery interface
+
+- Delivery partner registration
+- Verification and approval
+- Online/offline availability
+- Assigned orders
+- Pickup information
+- Customer delivery address
+- Navigation/maps
+- Live location sharing
+- Customer contact
+- Delivery OTP verification
+- Earnings and delivery history
+
+**3. ZENVEGO Admin**
+
+Administration
+
+Centralized operational control
+
+- Admin authentication
+- Customer management
+- Grower verification
+- Product moderation
+- Delivery partner management
+- Order management
+- Payments and refunds
+- Complaints and disputes
+- Commissions and settlements
+- Analytics and reports
+- Platform settings
+
+**4. Shared Backend**
+
+Central system
+
+- Common API
+- Central database
+- Authentication and permissions
+- Order processing
+- AI service
+- Payment integration
+- Delivery assignment
+- Real-time events
+- Notifications
+- Audit logs
+
+The three interfaces must communicate with one shared backend and one consistent source of business data. They must not maintain separate, conflicting order databases.
+
+## **4. Technology architecture — final implementation**
+
+The existing workspace is a **React + Vite + Express** project. The architecture should preserve that foundation rather than unnecessarily rebuilding everything.
+
+## **Recommended technology stack**
+
+| Layer             | Technology                       |
+| ----------------- | -------------------------------- |
+| Main frontend     | React + Vite                     |
+| Delivery frontend | React + Vite                     |
+| Admin frontend    | React + Vite                     |
+| Backend           | Node.js + Express                |
+| Database          | Firebase Firestore               |
+| Authentication    | Firebase Authentication          |
+| File storage      | Firebase Storage                 |
+| Real-time updates | Firestore listeners              |
+| AI integration    | ZEN AI service layer             |
+| Maps              | OpenStreetMap-compatible mapping |
+| Map interface     | Leaflet                          |
+| API communication | REST API                         |
+| Hosting           | Free-tier-compatible hosting     |
+| Version control   | GitHub                           |
+
+**Database decision:** Use Firebase Firestore with Firebase Authentication for the initial architecture.
+
+Reasons:
+
+- Supports real-time data updates.
+- Provides authentication integration.
+- Works with React and Express.
+- Avoids managing a separate database server.
+- Can support an initial launch within applicable free quotas.
+
+Cloud SQL PostgreSQL is not the right default for a strict zero-budget initial deployment because it introduces a database hosting cost.
+
+However, there is an important financial reality: no one can guarantee a production-grade, unlimited, zero-rupee platform. Firebase quotas, hosting limits, AI inference, SMS, payment processing, map services and traffic can introduce costs. The design must enforce usage limits and must never silently assume that a free tier is unlimited.
+
+### **System architecture**
+
+\#chatgpt-mermaid-\_r_1cl\_{font-family:-apple-system-body,ui-sans-serif,-apple-system,system-ui,"Segoe UI",Helvetica,"Apple Color Emoji",Arial,sans-serif,"Segoe UI Emoji","Segoe UI Symbol";font-size:16px;fill:rgb(237, 237, 237);}@keyframes edge-animation-frame{from{stroke-dashoffset:0;}}@keyframes dash{to{stroke-dashoffset:0;}}#chatgpt-mermaid-\_r_1cl\_ .edge-animation-slow{stroke-dasharray:9,5!important;stroke-dashoffset:900;animation:dash 50s linear infinite;stroke-linecap:round;}#chatgpt-mermaid-\_r_1cl\_ .edge-animation-fast{stroke-dasharray:9,5!important;stroke-dashoffset:900;animation:dash 20s linear infinite;stroke-linecap:round;}#chatgpt-mermaid-\_r_1cl\_ .error-icon{fill:rgb(48, 48, 48);}#chatgpt-mermaid-\_r_1cl\_ .error-text{fill:rgb(237, 237, 237);stroke:rgb(237, 237, 237);}#chatgpt-mermaid-\_r_1cl\_ .edge-thickness-normal{stroke-width:1px;}#chatgpt-mermaid-\_r_1cl\_ .edge-thickness-thick{stroke-width:3.5px;}#chatgpt-mermaid-\_r_1cl\_ .edge-pattern-solid{stroke-dasharray:0;}#chatgpt-mermaid-\_r_1cl\_ .edge-thickness-invisible{stroke-width:0;fill:none;}#chatgpt-mermaid-\_r_1cl\_ .edge-pattern-dashed{stroke-dasharray:3;}#chatgpt-mermaid-\_r_1cl\_ .edge-pattern-dotted{stroke-dasharray:2;}#chatgpt-mermaid-\_r_1cl\_ .marker{fill:rgb(175, 175, 175);stroke:rgb(175, 175, 175);}#chatgpt-mermaid-\_r_1cl\_ .marker.cross{stroke:rgb(175, 175, 175);}#chatgpt-mermaid-\_r_1cl\_ svg{font-family:-apple-system-body,ui-sans-serif,-apple-system,system-ui,"Segoe UI",Helvetica,"Apple Color Emoji",Arial,sans-serif,"Segoe UI Emoji","Segoe UI Symbol";font-size:16px;}#chatgpt-mermaid-\_r_1cl\_ p{margin:0;}#chatgpt-mermaid-\_r_1cl\_ .label{font-family:-apple-system-body,ui-sans-serif,-apple-system,system-ui,"Segoe UI",Helvetica,"Apple Color Emoji",Arial,sans-serif,"Segoe UI Emoji","Segoe UI Symbol";color:rgb(237, 237, 237);}#chatgpt-mermaid-\_r_1cl\_ .cluster-label text{fill:rgb(237, 237, 237);}#chatgpt-mermaid-\_r_1cl\_ .cluster-label span{color:rgb(237, 237, 237);}#chatgpt-mermaid-\_r_1cl\_ .cluster-label span p{background-color:transparent;}#chatgpt-mermaid-\_r_1cl\_ .label text,#chatgpt-mermaid-\_r_1cl\_ span{fill:rgb(237, 237, 237);color:rgb(237, 237, 237);}#chatgpt-mermaid-\_r_1cl\_ .node rect,#chatgpt-mermaid-\_r_1cl\_ .node circle,#chatgpt-mermaid-\_r_1cl\_ .node ellipse,#chatgpt-mermaid-\_r_1cl\_ .node polygon,#chatgpt-mermaid-\_r_1cl\_ .node path{fill:rgb(9, 23, 44);stroke:rgb(31, 78, 148);stroke-width:1px;}#chatgpt-mermaid-\_r_1cl\_ .rough-node .label text,#chatgpt-mermaid-\_r_1cl\_ .node .label text,#chatgpt-mermaid-\_r_1cl\_ .image-shape .label,#chatgpt-mermaid-\_r_1cl\_ .icon-shape .label{text-anchor:middle;}#chatgpt-mermaid-\_r_1cl\_ .node .katex path{fill:#000;stroke:#000;stroke-width:1px;}#chatgpt-mermaid-\_r_1cl\_ .rough-node .label,#chatgpt-mermaid-\_r_1cl\_ .node .label,#chatgpt-mermaid-\_r_1cl\_ .image-shape .label,#chatgpt-mermaid-\_r_1cl\_ .icon-shape .label{text-align:center;}#chatgpt-mermaid-\_r_1cl\_ .node.clickable{cursor:pointer;}#chatgpt-mermaid-\_r_1cl\_ .root .anchor path{fill:rgb(175, 175, 175)!important;stroke-width:0;stroke:rgb(175, 175, 175);}#chatgpt-mermaid-\_r_1cl\_ .arrowheadPath{fill:rgb(175, 175, 175);}#chatgpt-mermaid-\_r_1cl\_ .edgePath .path{stroke:rgb(175, 175, 175);stroke-width:1px;}#chatgpt-mermaid-\_r_1cl\_ .flowchart-link{stroke:rgb(175, 175, 175);fill:none;}#chatgpt-mermaid-\_r_1cl\_ .edgeLabel{background-color:rgb(0, 0, 0);text-align:center;}#chatgpt-mermaid-\_r_1cl\_ .edgeLabel p{background-color:rgb(0, 0, 0);}#chatgpt-mermaid-\_r_1cl\_ .edgeLabel rect{opacity:0.5;background-color:rgb(0, 0, 0);fill:rgb(0, 0, 0);}#chatgpt-mermaid-\_r_1cl\_ .labelBkg{background-color:rgba(0, 0, 0, 0.5);}#chatgpt-mermaid-\_r_1cl\_ .cluster rect{fill:rgb(48, 48, 48);stroke:rgba(255, 255, 255, 0.15);stroke-width:1px;}#chatgpt-mermaid-\_r_1cl\_ .cluster text{fill:rgb(237, 237, 237);}#chatgpt-mermaid-\_r_1cl\_ .cluster span{color:rgb(237, 237, 237);}#chatgpt-mermaid-\_r_1cl\_ div.mermaidTooltip{position:absolute;text-align:center;max-width:200px;padding:2px;font-family:-apple-system-body,ui-sans-serif,-apple-system,system-ui,"Segoe UI",Helvetica,"Apple Color Emoji",Arial,sans-serif,"Segoe UI Emoji","Segoe UI Symbol";font-size:12px;background:rgb(48, 48, 48);border:1px solid rgba(255, 255, 255, 0.15);border-radius:2px;pointer-events:none;z-index:100;}#chatgpt-mermaid-\_r_1cl\_ .flowchartTitleText{text-anchor:middle;font-size:18px;fill:rgb(237, 237, 237);}#chatgpt-mermaid-\_r_1cl\_ rect.text{fill:none;stroke-width:0;}#chatgpt-mermaid-\_r_1cl\_ .icon-shape,#chatgpt-mermaid-\_r_1cl\_ .image-shape{background-color:rgb(0, 0, 0);text-align:center;}#chatgpt-mermaid-\_r_1cl\_ .icon-shape p,#chatgpt-mermaid-\_r_1cl\_ .image-shape p{background-color:rgb(0, 0, 0);padding:2px;}#chatgpt-mermaid-\_r_1cl\_ .icon-shape .label rect,#chatgpt-mermaid-\_r_1cl\_ .image-shape .label rect{opacity:0.5;background-color:rgb(0, 0, 0);fill:rgb(0, 0, 0);}#chatgpt-mermaid-\_r_1cl\_ .label-icon{display:inline-block;height:1em;overflow:visible;vertical-align:-0.125em;}#chatgpt-mermaid-\_r_1cl\_ .node .label-icon path{fill:currentColor;stroke:revert;stroke-width:revert;}#chatgpt-mermaid-\_r_1cl\_ .node .neo-node{stroke:rgb(31, 78, 148);}#chatgpt-mermaid-\_r_1cl\_ [data-look="neo"].node rect,#chatgpt-mermaid-\_r_1cl\_ [data-look="neo"].cluster rect,#chatgpt-mermaid-\_r_1cl\_ [data-look="neo"].node polygon{stroke:url(#chatgpt-mermaid-\_r_1cl\_-gradient);filter:drop-shadow( 1px 2px 2px rgba(185,185,185,1));}#chatgpt-mermaid-\_r_1cl\_ [data-look="neo"].swimlane.cluster rect{filter:none;}#chatgpt-mermaid-\_r_1cl\_ [data-look="neo"].node path{stroke:url(#chatgpt-mermaid-\_r_1cl\_-gradient);stroke-width:1px;}#chatgpt-mermaid-\_r_1cl\_ [data-look="neo"].node .outer-path{filter:drop-shadow( 1px 2px 2px rgba(185,185,185,1));}#chatgpt-mermaid-\_r_1cl\_ [data-look="neo"].node .neo-line path{stroke:rgb(31, 78, 148);filter:none;}#chatgpt-mermaid-\_r_1cl\_ [data-look="neo"].node circle{stroke:url(#chatgpt-mermaid-\_r_1cl\_-gradient);filter:drop-shadow( 1px 2px 2px rgba(185,185,185,1));}#chatgpt-mermaid-\_r_1cl\_ [data-look="neo"].node circle .state-start{fill:#000000;}#chatgpt-mermaid-\_r_1cl\_ [data-look="neo"].icon-shape .icon{fill:url(#chatgpt-mermaid-\_r_1cl\_-gradient);filter:drop-shadow( 1px 2px 2px rgba(185,185,185,1));}#chatgpt-mermaid-\_r_1cl\_ [data-look="neo"].icon-shape .icon-neo path{stroke:url(#chatgpt-mermaid-\_r_1cl\_-gradient);filter:drop-shadow( 1px 2px 2px rgba(185,185,185,1));}#chatgpt-mermaid-\_r_1cl\_ .node text{font-size:14px;font-weight:600;letter-spacing:normal;fill:rgb(153, 206, 255);}#chatgpt-mermaid-\_r_1cl\_ .edgeLabels text{font-size:13px;font-weight:600;letter-spacing:-0.08px;fill:rgb(153, 206, 255);}#chatgpt-mermaid-\_r_1cl\_ .node tspan[font-weight="normal"],#chatgpt-mermaid-\_r_1cl\_ .edgeLabels tspan[font-weight="normal"]{font-weight:600;}#chatgpt-mermaid-\_r_1cl\_ .edgeLabel .label rect{opacity:1;rx:13px;ry:13px;fill:rgb(0, 14, 26);stroke:rgb(26, 62, 95);stroke-width:1px;}#chatgpt-mermaid-\_r_1cl\_ .node rect,#chatgpt-mermaid-\_r_1cl\_ .node circle,#chatgpt-mermaid-\_r_1cl\_ .node ellipse,#chatgpt-mermaid-\_r_1cl\_ .node polygon,#chatgpt-mermaid-\_r_1cl\_ .node path{fill:rgb(0, 40, 77);stroke:rgba(255, 255, 255, 0.1);stroke-width:1px;}#chatgpt-mermaid-\_r_1cl\_ .node rect{rx:16px;ry:16px;}#chatgpt-mermaid-\_r_1cl\_ .mermaid-decision .label-container{fill:rgb(0, 14, 26);stroke:rgb(26, 62, 95);stroke-dasharray:2,2;}#chatgpt-mermaid-\_r_1cl\_ .edgePaths .flowchart-link{stroke:rgb(175, 175, 175);stroke-width:1px;stroke-linecap:round;stroke-linejoin:round;}#chatgpt-mermaid-\_r_1cl\_ .marker{fill:rgb(175, 175, 175);stroke:rgb(175, 175, 175);}#chatgpt-mermaid-\_r_1cl\_ :root{--mermaid-font-family:-apple-system-body,ui-sans-serif,-apple-system,system-ui,"Segoe UI",Helvetica,"Apple Color Emoji",Arial,sans-serif,"Segoe UI Emoji","Segoe UI Symbol";}CustomerZENVEGO MainGrowerDelivery PartnerZENVEGO DeliveryAdministratorZENVEGO AdminShared Express APIFirebase AuthenticationCloud FirestoreZEN AI ServicePayment ServiceMaps and Location ServiceNotification ServiceReal-time Events
+
+### **Important security architecture**
+
+- Firebase Authentication verifies user identity.
+- Express validates access tokens for protected operations.
+- Role permissions are checked on the backend.
+- Firestore security rules protect direct database access.
+- Sensitive operations use server-side validation.
+- Payment verification happens on the backend.
+- Admin privileges cannot be granted by changing a frontend value.
+
+Never trust a user-provided role such as `admin`, a price, a delivery fee or an order total.
+
+# **5. Customer complete workflow**
+
+Customer journey
+
+[Online Grocery Mobile App UI — Fresh Food Shopping Experience by Terabit Projects for TERABIT IT on Dribbble](https://images.openai.com/static-rsc-4/Cmv3SQg7U6pgAGtv5iiHRPx9H2DUOpU7A5u86ssNVPO1tYplmym5JY84VBPlmGMBBt7H_TiVpkuXdnnnlIWrr6LIrHSMALG3MLWLRPQej5pHZiX2wVjE_BFdMVgh2kyMMKocVkOwR1K2B-YAt1rbbpbIJQY3CYnbJN2tcuNO3a8?purpose=inline)
+
+[Fresh & Clean Grocery App UI by UIX Liakat on Dribbble](https://images.openai.com/static-rsc-4/TYNImhVJPyUHIhukpi49ZoO6-EnPV_leYrS2-7XF8a5osKkLgwBmTyS1H6odRuJcRsXTtxO3TelELxtqlOtHMwu4_QmAaU8PrsfbhMNE2fn6Ar8g49RJkXDf8pFuNhAuJsyrPzBe1lM5FGBe4rb7z40JpTdya0SIJY7vMkYoRkg?purpose=inline)
+
+[Modern - Grocery Mobile App UI/UX - My Order & Order Traking. by M Rabbi Rezwan🔥 on Dribbble](https://images.openai.com/static-rsc-4/eYzzxOvaXDTHPO6J7gaOhHnLO-Yab4YHMr561nqY-j3jxhqDo4bvT8xsvq46k1wbQqzVxkqccx-y-1Z3wF8yo75S--91aRAUGGopoJxaGRhti_By2agf04MMZf_rLpkc4nUIvHrE00GC4lTdAjzNzLq7pZR9komGyM64J32QOVo?purpose=inline)
+
+[Grocery Delivery Mobile App UI Design — FrushGo by Zubair Akhter on Muzli](https://images.openai.com/static-rsc-4/TG7KLpOPH5fRIdd-faQiGp0EOdxjgwf1FFGEDe1r-ARgRSld8LyLO1CU18Xz5BcCNa_QPU-3qpFUIJJtPxspyjNQiTesEjym7OPZ2k00dtsnYneoLWBU_PNjY2TBbYMrf6cWh_pmTyCfKhL41yyLSJ8glAX-_X5IG6dXVcJX7I4?purpose=inline)
+
+[Smart - Grocery Mobile App UI/UX by Sagor Shopon 🔥 for Design Veli  on Dribbble](https://images.openai.com/static-rsc-4/9waxOQg0pUSP4ZsvDQrbk4SqWvRV5RCnMePCCXwgb54cR3eEfRDWmylA3FT6YXxHAMNiNs9Dzy-LVTWiyCzs1e6HIZznONlyZyKzWNAmeqS5PA-uqrxokNZhjQkeNTcUjfunQRxS-XfKrGYq2P_KmppVvv8EZjUfJA1p2DrGtqU?purpose=inline)
+
+[Grocery Delivery App Figma UI Kit | Super Market App UI Design by Insightlancer on Dribbble](https://images.openai.com/static-rsc-4/LBf2axhZi6K_Nlet_Xd8lesMZMBYtFM31Gaqqbp0ZIwoA9gMeXpYqx2_jnwCnoCUazvRCmX_XJWCYz3Usl8KpeIMLDFmTi5t75-vfxsT2sNgYYeu3vSoqJILqJHf-0WY-OIYk_GPziA-Z8NH2EhX9ONW6jCnpIddm-L9icEYfdI?purpose=inline)
+
+[EasyMart | Grocery App UI UX Design | E-commerce by Pixxen UI/UX for Pixxen Studio on Dribbble](https://images.openai.com/static-rsc-4/hZzM8XjPFaB35rzdlO_yd9WWoUiL7keiKDPg0Lx1aiU65yr_u-s8x69oFGXm-BNJwnxjVL6faUOgEzlpPp2mNBzpwCfJQQNlOUx55KUhdUM61AFBvJEef-Kez4mCbtjSv43uqJvBiZSGdEotSim2Yay7enRdrI2-M_dZ60n4kuk?purpose=inline)
+
+[StayFresh – Fresh Grocery App UI Design by fathy on Dribbble](https://images.openai.com/static-rsc-4/140Vjm79vqa9X2PkPRetVKlfj4ZyX9PnH0MpKtGgedtpEzU9eyE6yJbWDzaGKQXAB4_V6F3gl6GWrS2DiUjz8Xf2vyyhbPdulxP783kOYzua7ABod9uH1XvK_WqTxLtHIsQO1tKlXhiFq2u8PW8bbNKcmCHUDJAsS9eG41U86pc?purpose=inline)
+
+[Modern - Grocery Mobile App UI/UX - My Order & Order Traking. by Oladapo Ridwan on Dribbble](https://images.openai.com/static-rsc-4/MnecJ4CcGbPhMfGBU3FHF1l_NRRDEecoG0C4ISlQMDZ16DBL4iQ1qMjJBOWddC5UhPUpoXtA-7zAiLANQCwl8KE4DDRpFImLZv5AIs-0tVRElDN_9k5UoPOvtchKjbcCaXXQvuk9EJ-4_AEWDJh7GZngywGj-_3niNICyGcVhCc?purpose=inline)
+
+[Grocery Store UI :: Behance](https://images.openai.com/static-rsc-4/qDVVk_s9-F6kh7pmsO5f7fDZaVVXF5bv-dV1NZUe9yK8MPtAI7Kr398MYfEGa13hDFbiREINnqNrKuAnNLDYsoRVhympdl8G4zjsHsTUPBPRXRN50wcIBaZXEBaUT4fFKU256woy-sTRTMfd67Aae6fPDVrHvDdVhzM5DpfOcpM?purpose=inline)
+
+[Sainsbury's Chop Chop - 60 minute groceries](https://images.openai.com/static-rsc-4/N2XhHIgncyOKv_x-vDlVxttu23MEi1WNIsnaFsDtUkFpAumfo3X1ygfo_yGXU6VkpJ7U0cN_UQmpJuycjaN2CvgBE2AelcfKbCuntmRc7l_Lpyux2DqpmipYXWXoxHZChPJxYu5bjSe88OsPyQ8hvlxJtCVhkVitfCv4JvaIUOM?purpose=inline)
+
+[Modern - Grocery Mobile App UI/UX - Home & products details. by M Rabbi Rezwan🔥 for Nodus Labs - Product on Dribbble](https://images.openai.com/static-rsc-4/G97_yN2HQOJ2ObUuO-cLg_nn9VqkTMEP1EaXgWEbc2EfeBK_DOrbU2VUP38l2dW6DdoeFXLFA6UG0N8oOBK7zJPoN9YCa73vBWAZunvu779QA6olansN-ZuK8QkBtJy14rMHFaEfV0k2gRh7dE29KrUri6vZbjAcRlL0eIy7EbU?purpose=inline)
+
+### **Step 1: Visit ZENVEGO**
+
+The customer opens the website or application.
+
+The homepage displays:
+
+- ZENVEGO logo and identity.
+- Location selector.
+- Search bar.
+- Product categories.
+- Nearby growers.
+- Fresh produce.
+- Available products.
+- Featured local sellers.
+- Offers, where applicable.
+- ZEN AI assistant.
+- Login/register options.
+
+### **Step 2: Account registration**
+
+The customer can register using supported authentication methods.
+
+Required profile information:
+
+- Full name.
+- Email or verified phone number.
+- Password or authentication credentials.
+- Delivery address.
+- City and locality.
+- Location coordinates, with permission.
+
+Authentication must be completed before protected account activities.
+
+### **Step 3: Location selection**
+
+The system obtains the customer's location only with permission or lets them enter an address manually.
+
+The system identifies:
+
+- Available delivery area.
+- Nearby growers.
+- Product availability.
+- Delivery eligibility.
+- Estimated delivery distance.
+
+**Initial operating radius:** approximately 3 km, based on the original ZENVEGO concept.
+
+This should be configurable by service area, not hardcoded throughout the application.
+
+### **Step 4: Browse products**
+
+Customers can browse categories such as:
+
+- Fresh vegetables.
+- Fruits.
+- Leafy vegetables.
+- Herbs.
+- Terrace-grown produce.
+- Organic produce, where properly substantiated.
+- Seasonal products.
+- Other locally produced agricultural goods.
+
+Each product should display:
+
+| Information         | Example              |
+| ------------------- | -------------------- |
+| Product name        | Fresh tomatoes       |
+| Image               | Actual product image |
+| Price               | ₹40/kg               |
+| Grower              | Verified seller name |
+| Availability        | In stock             |
+| Quantity            | Available quantity   |
+| Location            | Nearby locality      |
+| Harvest information | When provided        |
+| Delivery estimate   | Calculated estimate  |
+
+A product must not be labelled organic or certified without appropriate supporting evidence.
+
+### **Step 5: Search and AI discovery**
+
+Customers can search manually or use ZEN AI.
+
+Examples:
+
+- Find tomatoes near me.
+- Show leafy vegetables.
+- Find products from terrace growers.
+- Show affordable seasonal vegetables.
+- Find growers within my delivery area.
+
+The AI should translate the customer's request into structured product filters and retrieve actual available products from the database.
+
+It must not invent products, prices, sellers or stock.
+
+### **Step 6: Product details**
+
+When a customer selects a product, show:
+
+- Product description.
+- Price and unit.
+- Grower details.
+- Available stock.
+- Harvest details, if provided.
+- Delivery availability.
+- Seller verification status.
+- Add-to-cart button.
+
+### **Step 7: Cart management**
+
+Customers can:
+
+- Add products.
+- Change quantities.
+- Remove products.
+- View subtotal.
+- View delivery charges.
+- Apply eligible offers.
+- Review the order.
+
+Stock must be revalidated when checking out.
+
+### **Step 8: Checkout**
+
+The system validates:
+
+1. Customer identity.
+2. Delivery address.
+3. Delivery serviceability.
+4. Product availability.
+5. Quantity.
+6. Current product prices.
+7. Delivery charges.
+8. Final payable amount.
+
+The backend calculates the final amount. The frontend must not determine the authoritative payment amount.
+
+### **Step 9: Payment**
+
+The platform should support the payment methods provided by its configured payment gateway, such as UPI, cards and other supported methods.
+
+Cash on delivery may be enabled only if operationally supported.
+
+Payment workflow:
+
+```
+Customer confirms order
+        ↓
+Backend validates cart
+        ↓
+Payment order/session created
+        ↓
+Customer completes payment
+        ↓
+Gateway sends payment confirmation
+        ↓
+Backend verifies payment
+        ↓
+Order becomes confirmed
+        ↓
+Grower receives order
+```
+
+A payment success screen alone is not proof of successful payment.
+
+### **Step 10: Order tracking**
+
+Customers can view:
+
+- Order ID.
+- Grower details.
+- Order status.
+- Delivery partner details once assigned.
+- Estimated arrival.
+- Live location when sharing is active.
+- Delivery progress.
+- Customer support.
+
+### **Step 11: Delivery completion**
+
+The customer receives the order and verifies completion using a delivery OTP.
+
+After completion:
+
+- Order status becomes delivered.
+- Payment and settlement records are updated.
+- Customer can submit feedback.
+- Order enters purchase history.
+
+### **Step 12: Customer account**
+
+The account dashboard includes:
+
+- Personal details.
+- Saved addresses.
+- Current orders.
+- Previous orders.
+- Payment history.
+- Refund status.
+- Reviews.
+- Support requests.
+- Account settings.
+
+# **6. Grower / Seller complete workflow**
+
+Supply-side journey
+
+[Agrismart - Farmer Application :: Behance](https://images.openai.com/static-rsc-4/UDlSag9eu-iKUEOpkCL5ddEV9rDTvx656Hz4CAtynybJZTvEAszREGFGd3kE5N3evDo9A-0XlXuqzqJm1wDgLfET_PHr1X7t0KW41DUSHJA-KVrLOZoBG-NXNjeFARD2ZNasuSq7lJh06bBXCVfh6SVapQWoazrt1SPc_BBgLnI?purpose=inline)
+
+[FarmFresh UX Case Study. Connecting Farmers to buyers directly… | by Rukayat Salam | Bootcamp | Medium](https://images.openai.com/static-rsc-4/XRggsr6-1dIjsLPn1APNbub08rN8rvBTKwAdbUp6v1e3NQqvg_-EDyZ6DBDK2ut2Wapb7yTtkEwgp-fpbZg9u1amvWihqlidPjgMV107bT6Z8kEW_e1s_K_KOK0eTBFYDamr-u4BL4vYb2C_ZdlwE1RchvC2oJNJNmabr2Slffs?purpose=inline)
+
+[Grocery Delivery App Development Company | Custom & Scalable Solutions](https://images.openai.com/static-rsc-4/S11s3-EIXigQgmSJ9fVlzo9N3aUL2utccM-XEuOLddgwas3dO-_oaIgbEamqU-8JfZbnDO6CZjhMs3E4i0ObTV9u2IxRpVl8Y7VBkqiOIjO97-wjyxcGlz7IYc001RY7GwGhfHD9ThYZFvIcXYx8S1ILLubVEiqeG8GyrXKgHUk?purpose=inline)
+
+[AgriLove, Uganda’s Farmers Marketplace.](https://images.openai.com/static-rsc-4/nq2oslhLUx_0rbgMOeeyoCAW2_GCp3deZsC43ewlKipkHgXj2RHhcf9o5jKOV1MZSAhkZaWXO78R9quB72UeGPvAq2Esvp0ulNtvwXuTvd08tWDt4shYKoTiE_-Wc72a9ITO8mcqeiErliHN0T7e6pbD6sZ3G4Oi0_lXqgDFigg?purpose=inline)
+
+[UI / UX of Mobile App - Azad Mandi | Jayant Sharma](https://images.openai.com/static-rsc-4/9JAY5uzAQ7vzCB6kOtx_ljRxSNszNRYHBai3EL2YNi_tozNnCkeWyJfYdB1aM5gi5NFsaOVosrc4RHE7tNGadSlfKlA2ASRl2jYwuoUPYUXbT0rwRXI0qci6zzp7C0p6FUi9wTd498xkX_q0h96U_JeuP0OUvsagbghgEeBngFI?purpose=inline)
+
+[GreenCart - A farm produce app :: Behance](https://images.openai.com/static-rsc-4/lFM6UeqlL0GFLSaJ_X2HXGGeNaEfkrYiWoFveZ0Sgl5mBldGhKg1xdcCyQzTRLfYKqbFVbdiGmHjP6bGqk-3RCZc7zCU52RhgB2XUtEzo7XtBRHUyeVhJvp1vXp-aGnvQfpDfSn5RRgheukHh5Pr28l_q9gP0kUaH6IKZVoSW8U?purpose=inline)
+
+[Haziran ayında balkonda saksıya eken kışın kilo kilo hasat ediyor - Sözcü](https://images.openai.com/static-rsc-4/8LA6CMq2J_Pe0cx4x4Bp7_SO5vjac8zNSO3E-meM4EMWyTNFC4J3wWIxWg0Og_DWshzr2IiK7z_Q4xpQIKD_-jpJEnQ9u8cqn3H8ypt_ypSU2614JHlHmq6sXE5YRMGBRWO1_2a9Y9rGdXNdKWotIyF51z2v7jd979loJWplLr4?purpose=inline)
+
+[GoFarm - Digital Solution for Agriculture by Iyan Qalbi on Dribbble](https://images.openai.com/static-rsc-4/Rp_8sJtihCuwDJjkXndNmwjZvOOB0I8laKXGRg5TAEvVvv6oxo2g27IIyEMzY1_0TdOuDmeHe02KVSW-oN68O6g-eGbO0kukPvxkxzEJnSzdXktnpb7BYBnBWPFHK3ce9_vOz4kgGv8_Zw4hWH_3j59Oaj-fQtKWxzDedhLzMqk?purpose=inline)
+
+[A Farmer's Inventory app — Jessica Mahoney Design](https://images.openai.com/static-rsc-4/zgqBnU6s0IVUFbthToqcG6z-Yin0Zs_3x6J8K-qcSrb8lrLAJlEx0eEhvHJ5Svs-__VXoOLetitH93l4aAWCmF3pXHdxx4-a-r5WysW6DexAZEA2yf8vrYhd06xzkOovvJ3HQ_9ZVpBoAj6XHqi72GnZIREvoTxa8GQ9TOoiGtg?purpose=inline)
+
+[Colheita rápida: Esta sementeira de abril dá legumes prontos em 30 dias. - Helder Martins](https://images.openai.com/static-rsc-4/v_nud4SJXRlqjyHLkK5O3hmb4gr93Y7YC0EK1BafmCSsGJHoKJKt_UNg1TbkzIvlayK8sQN0CPaPYZVVYQVV4lkJkPEJQyBJKyPYqCGRNS3LIAEkigDaSdL6QjojbHHwko-IDdVjBcPMG3F7gou9Y8cBsSQBCn6SFzeClaquosw?purpose=inline)
+
+[Semaai, Empowering Indonesian Farmers to Improve Their Livelihood](https://images.openai.com/static-rsc-4/nAS2yu40T62CwncKWlYgwR4jAlF5K2IHdWvN8ru4Mh6UGMBYyvaqymtU0ydcQnaOlxZCs3_1SpMdXsd2BGBltbSaS79aYPU07JNMQdTEf6dHbCVriXzEvXIG_HOKBuMn-_s842cTgMhYfB8lZj5XVWLvLN8kXD5VhmpmnurOHRE?purpose=inline)
+
+The grower side is one of the most important parts of ZENVEGO. Without actual sellers and reliable stock, the marketplace cannot operate.
+
+### **Step 1: Grower registration**
+
+A grower selects the seller registration option.
+
+Registration information:
+
+- Full name.
+- Mobile number.
+- Email.
+- Address.
+- Village/locality.
+- City.
+- Profile image, if required.
+- Grower type.
+- Produce categories.
+- Growing location.
+- Bank/payout information when required.
+
+Grower types:
+
+1. Urban terrace gardener.
+2. Home gardener.
+3. Small farmer.
+4. Independent local producer.
+5. Women-led growing enterprise.
+6. Other eligible local agricultural producer.
+
+### **Step 2: Verification**
+
+The grower submits the required verification information.
+
+Admin reviews:
+
+- Identity information.
+- Contact details.
+- Seller location.
+- Produce information.
+- Required documents.
+- Any relevant certification claims.
+
+Important
+
+Registration does not automatically mean verified status.
+
+Grower account statuses:
+
+`PENDING → UNDER_REVIEW → APPROVED / REJECTED`
+
+Suspended sellers cannot continue normal selling activities.
+
+### **Step 3: Grower dashboard**
+
+After approval, the grower receives a dashboard with:
+
+- Total products.
+- Active products.
+- Available stock.
+- Pending orders.
+- Accepted orders.
+- Completed orders.
+- Revenue.
+- Pending settlements.
+- Customer reviews.
+- Sales analytics.
+
+### **Step 4: Add products**
+
+Growers can add produce with:
+
+- Product name.
+- Category.
+- Description.
+- Product photos.
+- Price.
+- Measurement unit.
+- Available quantity.
+- Harvest date, if applicable.
+- Availability period.
+- Growing location.
+- Relevant certifications, if verified.
+
+### **Step 5: AI-assisted pricing**
+
+ZEN AI can help the grower understand:
+
+- Local demand.
+- Historical selling prices.
+- Seasonal demand.
+- Product availability.
+- Similar product listings.
+- Suggested price ranges.
+
+Example:
+
+A grower lists tomatoes at ₹50/kg.
+
+The system may compare available local listings and historical information and suggest a price range.
+
+The grower remains responsible for approving the selling price.
+
+**AI suggestions must never silently change seller prices.**
+
+### **Step 6: Inventory management**
+
+When a customer places an order:
+
+- Stock is reserved.
+- The seller sees the order.
+- Available stock is recalculated.
+- If the order is cancelled, eligible reserved stock is released.
+- If an order is completed, stock is deducted permanently.
+
+The inventory operation must be transaction-safe to prevent two customers from purchasing the same remaining stock.
+
+### **Step 7: Receive orders**
+
+The grower receives notifications for new orders.
+
+The grower can:
+
+- View customer order.
+- Check product quantities.
+- Accept order.
+- Reject order with a reason.
+- Confirm preparation.
+- Mark ready for pickup.
+
+Order acceptance must have a defined timeout and escalation policy.
+
+### **Step 8: Prepare order**
+
+The grower:
+
+1. Collects the produce.
+2. Checks the requested quantities.
+3. Ensures acceptable product quality.
+4. Packs the order.
+5. Marks it ready for pickup.
+
+### **Step 9: Handover**
+
+Once a delivery partner is assigned:
+
+- Grower sees delivery partner information.
+- Delivery partner receives pickup instructions.
+- Delivery partner reaches the grower.
+- Pickup is confirmed.
+- Order moves into delivery.
+
+### **Step 10: Earnings**
+
+The grower dashboard displays:
+
+- Gross product sales.
+- Platform commission.
+- Refund adjustments.
+- Other applicable deductions.
+- Net payable amount.
+- Settlement status.
+- Transaction history.
+
+Growers should have transparent settlement records.
+
+# **7. Delivery partner complete workflow**
+
+Last-mile delivery journey
+
+[Delivery Mobile App UI Design by Ronas IT | UI/UX Team on Dribbble](https://images.openai.com/static-rsc-4/HeC7W9nXCHRgjS7j2IKeJVjge3H4-h0HUltfPpmKkGxJgg45MW4eBk9RRGxKnpZA0i5FbfpNYaq_07yUbas6g5UWKztTnjCoitY5N0oGRWuTU68h9FLipln9NX_J-dce_TapTD-koTkpzNJ94c6y7qto75qR5OvYw7CM9Je8Hvo?purpose=inline)
+
+[Innovations Using Courier Services](https://images.openai.com/static-rsc-4/e8mGl1_lPnmEgUMVVdFWSXobKJ9DV8Na0NRSjPSTgVzeKGTXhPD4DjAaSEBbgEajvTFPwAkWkN7DLIf0YQSftlmDObpnTPYD4A9Tgk40y079kocuP_FQWcViYkF--s7yT26ZhEeYJBoK9Rmh54mJRHsUfGYMsQEUDfvkqXPhp7g?purpose=inline)
+
+[Asian delivery man delivering food, fruit, juice and vegetable to customer home - online grocery shopping service concept](https://images.openai.com/static-rsc-4/5nuwxZ1i4NDc5JuxUlv4GjZs9aYnhSNYluUo9u8hKvWZcN7s56bhUPwPnQRHh6t37aNVb2kuAWz5V3pxGwDtkfyQe0uqA2cNoxxoQ5OgfFjayJoTVhc4itkpm3hl32uEZ3NO09RClq8U_ywt1N5fx33Rcq254EHowpF_0yNFc6ivOE7hCgstjyWB4f5rrai0?purpose=inline)
+
+[Onro Reviews 2026: Details, Pricing, & Features | G2](https://images.openai.com/static-rsc-4/_9fsPA7rShqB6N_JvjiO9terZMzb0vMFsnZcLpyd17USlUV8d4umhQZlHk9JepazXC1Fg_yjcu9sH1-Kaw8Cfv73l5BqgAZYKxEM9-ccgWwZdaF_FKqFqVR_G_Bdzm9zqqjNkMbIJo15p3sgWgU5SmmNKUEbTotec7_zRD-Oneg?purpose=inline)
+
+[All in One Multi Vendor Food Ordering System](https://images.openai.com/static-rsc-4/WGc052Jz5cjl4nns2X2wJ_QZhJ5m405uGD8TeP7dWqPspouanx1WRgX4OGqBzwqljMvs48RkTLq2F9j4H0aNAZgwLGT3GQgDNiaspZo93eAtXwIdXAUOBbTIb-A9pN4DL8j2YQ-_UKqKCvech0HaV8esunvNjT7tjVFd6gN0d_Y?purpose=inline)
+
+["라이더 소득과 고객 경험 동시 개선"…부릉, 'AI 자동배차' 도입 - 머니투데이](https://images.openai.com/static-rsc-4/nI9Msn475OZeHNarOCGHX8FzWQH1vGHq4FGADOv3lU92EgX65FoIFgEK19LX8eTsyRNI1YT7MAV4hVuTCWAJB2iPTuBYS4X6ys1Z4YnbrG0AvVNneKQJo1DlvQoFexcVu2IP2lP9cHVNXRQgLHHwCcKSGAbK-2x2f5-f8oczl1I?purpose=inline)
+
+[Perishable Goods Delivery in Delhi | Fresh & Timely Nationwide Service](https://images.openai.com/static-rsc-4/OA4gFn51sVrAMw7CV3_8YAfCkfb67Y7OkSXxUKE86jsNWmHqKhiDrEGNWwRY0FsCOayzrobcFhLwKw5G6_fuXuhP9-f8NSCYonmiGie2YFuOmKfYflw8IXDrsx5sdUlpIGlOrNGCOu_YEAu6VKVuFCm3jXwY3hkSALgtpboKdZM?purpose=inline)
+
+[Browse thousands of Yellow Theme images for design inspiration | Dribbble](https://images.openai.com/static-rsc-4/Y_85L0_MPWfURAbsfRS16k9AL8DLELiUQaynvWmbcKLR0ZJ5pr-kKqZ0AKCmRScX3jiYXBi2R4kmoO8SzzTdpc8uawx84bs2ZjnkHikYnJva1TCFDUVH4pvETl4LkJ3lxfgsIq6KsdsV75xB_hqWeLesZfQtNwlJFRXIA8ZKJA0?purpose=inline)
+
+[Gofresh - Fresh Grocery Delivery Services in Lagos](https://images.openai.com/static-rsc-4/mCL3kL5Jqm1YOTQ2KQn5qpwBs2OhtR8XT2-b8n_UcmBXb8xDqGAOfB5x8TmX1vWVGkYj3z9gMYkIu53c8FgYoAkvkFLBVByDc62br5mTgiuJ5mU1XIvzSrrDQxahkU9sdx6lFZcMice6LX1OQfa78zU0B9Cy7nkPMTxDFL-AzEo?purpose=inline)
+
+[Apogee創辦人：人在台灣，也能讓泰國業務團隊戰力翻倍？用「業務王」打造行動戰隊 - 業務王Salesking](https://images.openai.com/static-rsc-4/0E6IQa-chtQgAXoA2lHkbXHVyrw26Nru76HYU6GYMJj21vt5zpEmO4TwFnrAe2wi8TAfsYs9vzev00JY9ppgTF0WWBhiq11UFff6G9XwxG-4Rap0RTfoVZ9WX7A4nfxvtbn6_G7IfC8ZrasP3M9I56rA_Nke7Wd4DAToPm9umgE?purpose=inline)
+
+[Ditch The Queue And Opt for the Smartest Way of Grocery Delivery Service - www.lokmattimes.com](https://images.openai.com/static-rsc-4/K3KQ4VBW3wBGIXqbeiaEnnrU1Btm17f_SJXNyMgAMDvkgAKoZzWePVGI7mK7PJ0DMRzGvw0qyUkDnnjHgSAkJZT1nX4yrXlzWC-cJ_oU3lpGBo921L9O9w_isu-I3lhCBTMbOnUPRq4oLckkCfxwolcdFBIqxq8HcvcR0YzEf4Y?purpose=inline)
+
+### **Step 1: Registration**
+
+Delivery partners register with:
+
+- Full name.
+- Mobile number.
+- Email, if required.
+- Address.
+- Profile photograph, if required.
+- Required identity verification.
+- Vehicle information.
+- Other legally required information.
+
+### **Step 2: Admin verification**
+
+The admin checks submitted information and approves or rejects the account.
+
+Delivery partners cannot accept actual orders before approval.
+
+### **Step 3: Login and availability**
+
+The delivery partner logs into the dedicated ZENVEGO Delivery interface.
+
+Dashboard:
+
+- Online/offline status.
+- Available orders.
+- Assigned orders.
+- Active deliveries.
+- Completed deliveries.
+- Earnings.
+- Delivery history.
+
+### **Step 4: Receive delivery assignment**
+
+The assignment system considers:
+
+- Distance from grower.
+- Delivery partner availability.
+- Current workload.
+- Delivery area.
+- Order requirements.
+- Estimated travel time.
+
+The first version can use a straightforward nearest-eligible-partner assignment algorithm.
+
+More sophisticated optimization can be introduced after operational data is available.
+
+### **Step 5: Accept assignment**
+
+The delivery partner receives:
+
+- Order ID.
+- Grower name.
+- Pickup location.
+- Customer delivery area.
+- Estimated distance.
+- Expected delivery time.
+- Order instructions.
+
+The partner accepts or declines according to the assignment rules.
+
+If declined or timed out, the system attempts reassignment.
+
+### **Step 6: Reach grower**
+
+The application shows the grower's pickup location on the map.
+
+The partner can:
+
+- Open navigation.
+- View grower details.
+- Contact the grower through an approved communication method.
+- Update arrival status.
+
+### **Step 7: Pickup confirmation**
+
+The delivery partner verifies the correct order.
+
+After collecting it, they mark:
+
+`PICKED_UP`
+
+The backend records:
+
+- Pickup time.
+- Delivery partner ID.
+- Order ID.
+- Pickup confirmation.
+- Relevant event history.
+
+### **Step 8: Navigate to customer**
+
+The application shows the customer delivery location.
+
+It provides:
+
+- Route information.
+- Estimated arrival.
+- Customer contact option.
+- Delivery instructions.
+- Live tracking.
+
+### **Step 9: Live tracking**
+
+The delivery partner application periodically shares location while an active delivery is in progress and permission is granted.
+
+The customer sees the delivery partner's latest available position.
+
+The admin can monitor active deliveries.
+
+Location sharing must stop when the delivery is completed or cancelled.
+
+### **Step 10: Contact display**
+
+The customer should be able to contact the delivery partner using a protected communication method.
+
+Do not expose personal phone numbers publicly.
+
+Use an appropriate masked-calling service if available and affordable. Otherwise, implement a controlled contact option with privacy disclosures.
+
+### **Step 11: Delivery verification**
+
+The delivery partner reaches the customer.
+
+The customer shares the delivery OTP.
+
+The backend verifies the OTP and only then accepts successful delivery completion.
+
+### **Step 12: Earnings**
+
+The delivery dashboard updates:
+
+- Completed deliveries.
+- Delivery earnings.
+- Incentives, if configured.
+- Adjustments.
+- Payment status.
+- Historical earnings.
+
+# **8. ZENVEGO Admin — complete control workflow**
+
+Central administration
+
+[This is an Ecommerce Admin Dashboard by Farhan Israk on Dribbble](https://images.openai.com/static-rsc-4/0y64BxjYMJfypaVfBjDpo1SL36dtJFbojhmT5qAlAs37WwX_654B33vaBl1Z0SYaxR72Z-ZAS5_REv_Dk0Fe4j_Rf1pk1iNMns7AydSH-IeVItKPpgHD-pN9sB4MEZ9ylAWodX2vgO16MZp2TdR4wdU1On2d0e8_f59oHIqGWP0?purpose=inline)
+
+[MarketplaceOS - E-Commerce Marketplace Platform | tinyscale](https://images.openai.com/static-rsc-4/etsZN8IqOru0UK64LBqy30ibJREOBACykhbjPLJqQVBEi4Dd7HMYnJhU1YIAg_3zx0papE0T_A8T4O2leoCH12YpmRpeCNIhpecha_CZX8AQxup_5OXXFtFjNbn5f9swCR4paA9Qek5mGAwpKIxAhCeffvIgQ0xeHnkU8NlNITM?purpose=inline)
+
+[Logistics Dashboard designs, themes, templates and downloadable graphic elements on Dribbble](https://images.openai.com/static-rsc-4/nQl3utH5yD2VPGXZEgG5gMf7wBiUr20n81vRINFdUVDcwnSCWeI61mHi4fc4j8lo1xzHDcLp3V73PDxqcAFy2k1tL0d90eNEpheR9FOsLDfrIIq677OfbKKk0iSfwjTCO8Pua24ir8sDUPRnOT2pBWc7MQ41IXgwaM0d6oyRLsQ?purpose=inline)
+
+[Dokan Vendor Verification - Admin Settings - Dokan](https://images.openai.com/static-rsc-4/FWWkb38hNL2Hem2SmoM092c9cQ-y8MnMyWxZuHK81Cqirfnhi5QsTea5zASoiM7QO8lJG2ENGanpHSZ9LmKg6zXji18ABDJAAX3DvXFZIJjSzlqjHPWGe0WrXhCbUJX958e0WBju6c_HAzEFpt71uVzdb6v-VoAsLZ21lUciUuU?purpose=inline)
+
+[AI Delivery Analytics and Reporting Tool | FixLastMile](https://images.openai.com/static-rsc-4/2ep8X6RqR83JokQYY7eexV3G5Afg7bozhuRUtSVFXbHShvtI0hLfQLsEm4zaN2Hg2RLsO7gx41_OPgqpbt49t5zQ_DrCsUWwUq0gNzba7GKZVdQAhimPn3FLh1sgXFzqjFSeUrwCIMi47GYjcu7y92_VBinjEIkOt2fuL2sRXrY?purpose=inline)
+
+[E-commerce Admin Dashboard by Riasul Islam on Dribbble](https://images.openai.com/static-rsc-4/63I8hP5TgPMvjflSCn9Emsb2M27rxmtLFZbNXmzayhuLozauOmnzZ4zA8no1QvKHV09T6Ge-j8sF72-IRKifusMt0ovW1Sdzcn144ybmuusf9OvnceBqu_JaSrCjfkfjOGiEZG9CKW7qJu1YxBkJdDYLZ1aHAvpSwTwd6OUR97A?purpose=inline)
+
+[SendOS — The Logistics Operating System for Africa](https://images.openai.com/static-rsc-4/N9yW6XPUvUw03IsR4sE_rvdEvrpxaFJinDU-i5FXAbGFiwHgssyWTZCioaBqLhWuxMnRQGYaPD7sXY_qoVc8XQy_OLV2fPyGTyw7285BAA_9n-KA-gYiAO7HR_1RfYGflNvwRPNMnwSYQ3vvRa5HoZWIMf668AI4Ltl2D_xZYBk?purpose=inline)
+
+The admin dashboard is the central operating control panel.
+
+### **A. Admin login**
+
+- Secure login.
+- Multi-factor authentication where supported.
+- Role-based permissions.
+- Session management.
+- Audit logs.
+
+Admin accounts must be created and authorized through trusted backend processes, not public registration.
+
+### **B. Dashboard overview**
+
+Display:
+
+| Metric            | Purpose               |
+| ----------------- | --------------------- |
+| Total customers   | Customer growth       |
+| Total growers     | Supply network        |
+| Verified growers  | Approved supply       |
+| Delivery partners | Delivery network      |
+| Total orders      | Transaction volume    |
+| Pending orders    | Operational workload  |
+| Completed orders  | Fulfilment            |
+| Cancelled orders  | Failure analysis      |
+| Revenue           | Financial performance |
+| Active deliveries | Live operations       |
+| Refunds           | Customer service      |
+
+### **C. Customer management**
+
+Admin can:
+
+- Search customers.
+- View account status.
+- View relevant order history.
+- Handle complaints.
+- Suspend accounts for legitimate policy violations.
+- Restore accounts where appropriate.
+
+### **D. Grower management**
+
+Admin can:
+
+- Review registration.
+- Approve or reject applications.
+- Verify supporting information.
+- Suspend sellers.
+- Review product listings.
+- Investigate complaints.
+- Manage certification evidence.
+
+### **E. Product management**
+
+Admin can:
+
+- View all products.
+- Approve listings if moderation is enabled.
+- Remove prohibited or misleading listings.
+- Handle reported products.
+- Manage categories.
+- Manage featured products.
+- Review pricing irregularities.
+
+### **F. Delivery partner management**
+
+Admin can:
+
+- Review registrations.
+- Verify documentation.
+- Approve or suspend partners.
+- Monitor availability.
+- Review active assignments.
+- Investigate failed deliveries.
+- View delivery performance.
+
+### **G. Order management**
+
+Admin can:
+
+- Search orders.
+- View order details.
+- Monitor order status.
+- Investigate delays.
+- Handle cancellations.
+- Process eligible refunds.
+- Reassign delivery partners.
+- Resolve disputes.
+
+Admin changes must be recorded in an audit log.
+
+### **H. Financial management**
+
+Admin can review:
+
+- Customer payments.
+- Grower settlements.
+- Delivery payouts.
+- Platform commissions.
+- Refunds.
+- Payment failures.
+- Transaction reconciliation.
+
+### **I. Analytics**
+
+Admin should see:
+
+- Most popular products.
+- Highest-performing localities.
+- Active growers.
+- Repeat customers.
+- Average order value.
+- Order fulfilment rate.
+- Delivery success rate.
+- Cancellation reasons.
+- Platform revenue.
+
+### **J. Platform settings**
+
+Admin controls:
+
+- Service areas.
+- Delivery radius.
+- Commission rates.
+- Delivery charges.
+- Minimum order values.
+- Product categories.
+- Promotional rules.
+- Notification templates.
+- Order timeout settings.
+- Platform maintenance status.
+
+# **9. ZEN AI — complete artificial intelligence workflow**
+
+ZENVEGO intelligent layer
+
+[AI Voice Assistant Mobile App | Smart Voice Interaction | Qudra by Md Forhad Alam for Qudra on Dribbble](https://images.openai.com/static-rsc-4/2xQbdWa9tYD7EP38G66AL01ruZGR-u1LaNPKiW63d1my9zqd1qbwUDOi3O3R84obiNB-k4urcGrIEX-cou9fdhDP2tircweI_BvbqubXRcVTJ2AvU505dPEkcKeEzBpjWCJFh7p_be34mMcMLWTrqlN1LYU0bWnvBLqi0ln_w_I?purpose=inline)
+
+[Browse thousands of Smart App Banner images for design inspiration | Dribbble](https://images.openai.com/static-rsc-4/5d3TNfujx8YaZyJ-vWuNPR0RwzBcg2G_xUXHGQw2B2M4PBmsbo2C8nzBrI8Y-UplOQWvBKw19CeJzMSSad6W8ARzf_sMrJFtZzhrY6PMDiRDSiTc-ePHC5ENMifHLYn1SGpu5ab-Yn8nckK6q3x9NMK3CBz9LRkU8QmIzQPlCZM?purpose=inline)
+
+[Walmart’s Indian E-Commerce Subsidiary Flipkart Debuts Voice Assistant for Grocery Shopping in Hindi and English - Voicebot.ai](https://images.openai.com/static-rsc-4/cgEykg_hrEzaaOlnNjN85yhPIOprVCqL5H99Irn0CtIWMunWUr79ko8iPU5ahKgs0YCYNgJCqMS2D3LawuQhlQKaDJr_f2u0qSzRHVkAAG_KL9Qhhvf7wzB4Dd7obw6bEZqUVOeauB6sL9heSzlMRjJ3B-bllneo2Z0Lrd8Lg_Q?purpose=inline)
+
+[cognicart: AI Shopping & Ecommerce App - Welcome Screen UIUX by finterface on Dribbble](https://images.openai.com/static-rsc-4/C4VEDrVpVhr0KqAXBB7HRzYnKMhOj1tjVm_ue_85e2ouXb8KD6xiIYjwH4Fif137FNF20sa3a3IGxY1QAXtmrXpa_iCEDFxprmku-BKUCLwzFsyv6ik_tsmhpPlenF29W7gT4vUojie9JET07VmIu8MXhLWvWpLzuWWG3ifIO-0?purpose=inline)
+
+[Instacart launches AI-powered grocery shopping assistant | Supermarket Perimeter](https://images.openai.com/static-rsc-4/xvyqwf8O3gxSeHsTIt561uBXFLZAbOXqDRGkEQDRx3znz4jwCjJ7ziMf6LsE2T-S3D8se8HWiNjKWPfvCXebpQFwGKQnBU0DA6JU-bPevJENBmyirpAckSuqFzVjx7AePV1Sz5ovhAqExOQA_oL8RKfMiw8nEokGTBXEaVcMq7k?purpose=inline)
+
+[AI Assistant App by Hossein Saleki on Dribbble](https://images.openai.com/static-rsc-4/iEPIqa_A6bMLt71u2oze3IbgYT2EuJF_IuHZj9zsZOcnGKXNDqws8zJXgFrXm9Qn3uuuaD_g8dpubSz6ISamgUh-jMaVI-hZ-QDSSI5_6Blh8tBuoQz8o2XkzUHmxcqoU2Z8UisryE-2HwkK8QsJ3Mmdu5vyEN9WkkM_pDB70T0?purpose=inline)
+
+[Nutrition App - Nutrition Calculator - Get Grocery Rewards For Eating Better!](https://images.openai.com/static-rsc-4/IG9-syC5RGTYbyvLpA1o9Q4z4ol4T84uB82Sj0wGfkRqXfFVEFPrlFpEUrAe1NiGXvaoK6bINmjqZ8JPSDPWX_qj9MBBU_D3Shlp3z_LS-xNjrhxT-9Qk40pQMe32oFnVkDpOz_bnguJ5uN_a-szpnw4qQppPwiDwo5phyi0Hh8?purpose=inline)
+
+[How Mystore Genie’s Multilingual Upgrade Simplifies ONDC Network Shopping](https://images.openai.com/static-rsc-4/BYNOV6ybeq9-YUfFmWiLF_huFI08kHF8cn2gsAZnP2EhOVAE6rJx2X5EVXGo8pjRhMYDq40edyqp-pKz8CSIaZSj5aZIg3wXO2AtJa0afse5gg71Qj7lPgl6ds3NOXS7NPlXmmyZYelRgo0LlpLucs7rw6FAg2LzlpIHcOn8izc?purpose=inline)
+
+[AI-powered E-commerce Assistant UI Design by Safiiul Alam on Dribbble](https://images.openai.com/static-rsc-4/GMCnISSXSdd0ZkvqinhOYisSVMqy25gjwg65Rqa6wx8IFiipgEYA-WKZu2Bmzhv1VuWSBrpS_thohFdc87WZXNJ7Z3vc70uyIujIWtgvr-dmQukZdWea2RIt9s68wnqhfNBxayZqzwrljOIg-DIEuNjqT-Ycce6x6EsRem_xmEo?purpose=inline)
+
+[Ecommerce Site Search for Online Grocery Stores | Wave Grocery](https://images.openai.com/static-rsc-4/OF23blkTi73cTFRak5fpGs5P5gkS5qtMwhrXJ6tmN5fagaVXeYSq_FeANo9CHuAJOryU9YTtmTYb0vu6UPOCK--ash2drx7nNQRjkchkgHRKmENjQYXHqRZrv3jvXj292laI-goUaqBQMUMio3hWd32MjlFXw-mzODvDs4MO5tE?purpose=inline)
+
+[Ecommerce Mobile App UI | AI Shopping Assistant | eCommerce App by Fahad Ibn Sayeed on Dribbble](https://images.openai.com/static-rsc-4/5nhiwr1naZXWrzzS8YEgWtFmHPdKRsf1UT7hxLUryka5pbLa7hTNPt7IWyNQiNz969lXN_DiGYkSphVFzQ_bqlg5XcSAk2EfTqBQxTTbQLGACvkKRFhFoYZhV6yFxwWGWnJRSM884_w6OAubi7oQW7INpIIh0OhGEypRgUByFBo?purpose=inline)
+
+[«Яндекс Лавка» запустила голосового ИИ-помощника для покупок –  Новости ритейла и розничной торговли | Retail.ru](https://images.openai.com/static-rsc-4/5GnoZ7peT_5S6kfmX9b0Nd7Mf6TuMZV42xyYHKzFNvqZ8o-cJnV_4WuRiZTApufswfRt6h_4TXVYSFiO7Aqz8xOoFWY7tR2tdmvZLDmTZSe5FF_KOr5ZGjl4MAJWlY89I8tkpEnuJKH3c1lzstfpoktneq6SHAnTEQ81-sM46-0?purpose=inline)
+
+[Ai Voice Generator designs, themes, templates and downloadable graphic elements on Dribbble](https://images.openai.com/static-rsc-4/p2W3oFDhXXdoeavZ9bo4MCianyp9nXJbXmkOJYIcS_o3O1dEo-hygm04EK01mps-yKFL2QpdCSJWeXcXHr8PCYzRfWjTalgGJQve35T1qn_ODyJj7p0qJpEWRxypq4LPAC2ORQEBEwN5UOcY7ChhMqI4onoqXnwbDr-8FSBEvDc?purpose=inline)
+
+ZEN AI should be a practical assistant integrated throughout the ZENVEGO ecosystem, not a chatbot added only to the homepage.
+
+Its purpose is to make the marketplace easier for customers, growers and administrators.
+
+### **A. Voice-first customer assistant**
+
+ZEN AI should support:
+
+- Telugu.
+- Tamil.
+- Hindi.
+- English.
+
+Customer speaks naturally.
+
+Example:
+
+"Show me fresh tomatoes from nearby growers."
+
+Workflow:
+
+```
+Customer speaks
+      ↓
+Voice input captured
+      ↓
+Speech converted into text
+      ↓
+Language identified
+      ↓
+Intent understood
+      ↓
+Database product search
+      ↓
+Relevant products retrieved
+      ↓
+Results displayed
+      ↓
+Optional voice response
+```
+
+Voice recognition and voice output should be designed as separate services so the application can continue to work with text if voice services are unavailable.
+
+### **B. Intelligent product discovery**
+
+ZEN AI helps customers find:
+
+- Nearby produce.
+- Seasonal products.
+- Affordable products.
+- Products from particular growers.
+- Products matching their search.
+- Available alternatives when something is out of stock.
+
+Example 1: A customer asks for fresh leafy vegetables.
+
+Example 2: A customer asks for vegetables available from terrace growers.
+
+The assistant should retrieve actual marketplace data rather than generate imaginary results.
+
+### **C. Grower AI assistant**
+
+ZEN AI helps growers with:
+
+- Product description writing.
+- Product category suggestions.
+- Price comparison.
+- Demand insights.
+- Inventory reminders.
+- Seasonal selling insights.
+- Basic marketplace guidance.
+
+Example:
+
+A grower enters "I have 10 kg of tomatoes."
+
+ZEN AI can help create a product listing with a suggested description, unit and category.
+
+The grower confirms the price and available quantity.
+
+### **D. AI-assisted demand analysis**
+
+The system can analyze:
+
+- Previous orders.
+- Product popularity.
+- Seasonal patterns.
+- Local demand.
+- Stock availability.
+- Sales history.
+
+Example:
+
+If tomatoes have consistently higher demand in a particular service area, the dashboard can highlight that trend to participating growers.
+
+This should be based on actual data, not fabricated AI predictions.
+
+### **E. AI-assisted pricing**
+
+The system can provide a suggested price range based on available marketplace information.
+
+It should consider:
+
+- Similar listings.
+- Local prices.
+- Product unit.
+- Historical sales.
+- Availability.
+- Seasonality.
+
+The seller always retains control of the final selling price.
+
+### **F. AI-powered multilingual support**
+
+Customers and growers can ask questions in their preferred supported language.
+
+The assistant can explain:
+
+- How to place orders.
+- How to list products.
+- How to track orders.
+- How to understand payments.
+- How to contact support.
+
+### **G. Future AI expansion**
+
+After sufficient operational data becomes available:
+
+- Demand forecasting.
+- Inventory recommendations.
+- Local supply-demand matching.
+- Delivery workload prediction.
+- Customer recommendation personalization.
+- Seller performance insights.
+
+**AI limitation:** Never allow an AI response to independently approve sellers, release payments, modify orders, issue refunds or change inventory without validated backend authorization.
+
+# **10. Complete order lifecycle — the heart of ZENVEGO**
+
+This is the most important technical workflow.
+
+Every order must follow a clearly defined lifecycle.
+
+\#chatgpt-mermaid-\_r_1d4\_{font-family:-apple-system-body,ui-sans-serif,-apple-system,system-ui,"Segoe UI",Helvetica,"Apple Color Emoji",Arial,sans-serif,"Segoe UI Emoji","Segoe UI Symbol";font-size:16px;fill:rgb(237, 237, 237);}@keyframes edge-animation-frame{from{stroke-dashoffset:0;}}@keyframes dash{to{stroke-dashoffset:0;}}#chatgpt-mermaid-\_r_1d4\_ .edge-animation-slow{stroke-dasharray:9,5!important;stroke-dashoffset:900;animation:dash 50s linear infinite;stroke-linecap:round;}#chatgpt-mermaid-\_r_1d4\_ .edge-animation-fast{stroke-dasharray:9,5!important;stroke-dashoffset:900;animation:dash 20s linear infinite;stroke-linecap:round;}#chatgpt-mermaid-\_r_1d4\_ .error-icon{fill:rgb(48, 48, 48);}#chatgpt-mermaid-\_r_1d4\_ .error-text{fill:rgb(237, 237, 237);stroke:rgb(237, 237, 237);}#chatgpt-mermaid-\_r_1d4\_ .edge-thickness-normal{stroke-width:1px;}#chatgpt-mermaid-\_r_1d4\_ .edge-thickness-thick{stroke-width:3.5px;}#chatgpt-mermaid-\_r_1d4\_ .edge-pattern-solid{stroke-dasharray:0;}#chatgpt-mermaid-\_r_1d4\_ .edge-thickness-invisible{stroke-width:0;fill:none;}#chatgpt-mermaid-\_r_1d4\_ .edge-pattern-dashed{stroke-dasharray:3;}#chatgpt-mermaid-\_r_1d4\_ .edge-pattern-dotted{stroke-dasharray:2;}#chatgpt-mermaid-\_r_1d4\_ .marker{fill:rgb(175, 175, 175);stroke:rgb(175, 175, 175);}#chatgpt-mermaid-\_r_1d4\_ .marker.cross{stroke:rgb(175, 175, 175);}#chatgpt-mermaid-\_r_1d4\_ svg{font-family:-apple-system-body,ui-sans-serif,-apple-system,system-ui,"Segoe UI",Helvetica,"Apple Color Emoji",Arial,sans-serif,"Segoe UI Emoji","Segoe UI Symbol";font-size:16px;}#chatgpt-mermaid-\_r_1d4\_ p{margin:0;}#chatgpt-mermaid-\_r_1d4\_ .label{font-family:-apple-system-body,ui-sans-serif,-apple-system,system-ui,"Segoe UI",Helvetica,"Apple Color Emoji",Arial,sans-serif,"Segoe UI Emoji","Segoe UI Symbol";color:rgb(237, 237, 237);}#chatgpt-mermaid-\_r_1d4\_ .cluster-label text{fill:rgb(237, 237, 237);}#chatgpt-mermaid-\_r_1d4\_ .cluster-label span{color:rgb(237, 237, 237);}#chatgpt-mermaid-\_r_1d4\_ .cluster-label span p{background-color:transparent;}#chatgpt-mermaid-\_r_1d4\_ .label text,#chatgpt-mermaid-\_r_1d4\_ span{fill:rgb(237, 237, 237);color:rgb(237, 237, 237);}#chatgpt-mermaid-\_r_1d4\_ .node rect,#chatgpt-mermaid-\_r_1d4\_ .node circle,#chatgpt-mermaid-\_r_1d4\_ .node ellipse,#chatgpt-mermaid-\_r_1d4\_ .node polygon,#chatgpt-mermaid-\_r_1d4\_ .node path{fill:rgb(9, 23, 44);stroke:rgb(31, 78, 148);stroke-width:1px;}#chatgpt-mermaid-\_r_1d4\_ .rough-node .label text,#chatgpt-mermaid-\_r_1d4\_ .node .label text,#chatgpt-mermaid-\_r_1d4\_ .image-shape .label,#chatgpt-mermaid-\_r_1d4\_ .icon-shape .label{text-anchor:middle;}#chatgpt-mermaid-\_r_1d4\_ .node .katex path{fill:#000;stroke:#000;stroke-width:1px;}#chatgpt-mermaid-\_r_1d4\_ .rough-node .label,#chatgpt-mermaid-\_r_1d4\_ .node .label,#chatgpt-mermaid-\_r_1d4\_ .image-shape .label,#chatgpt-mermaid-\_r_1d4\_ .icon-shape .label{text-align:center;}#chatgpt-mermaid-\_r_1d4\_ .node.clickable{cursor:pointer;}#chatgpt-mermaid-\_r_1d4\_ .root .anchor path{fill:rgb(175, 175, 175)!important;stroke-width:0;stroke:rgb(175, 175, 175);}#chatgpt-mermaid-\_r_1d4\_ .arrowheadPath{fill:rgb(175, 175, 175);}#chatgpt-mermaid-\_r_1d4\_ .edgePath .path{stroke:rgb(175, 175, 175);stroke-width:1px;}#chatgpt-mermaid-\_r_1d4\_ .flowchart-link{stroke:rgb(175, 175, 175);fill:none;}#chatgpt-mermaid-\_r_1d4\_ .edgeLabel{background-color:rgb(0, 0, 0);text-align:center;}#chatgpt-mermaid-\_r_1d4\_ .edgeLabel p{background-color:rgb(0, 0, 0);}#chatgpt-mermaid-\_r_1d4\_ .edgeLabel rect{opacity:0.5;background-color:rgb(0, 0, 0);fill:rgb(0, 0, 0);}#chatgpt-mermaid-\_r_1d4\_ .labelBkg{background-color:rgba(0, 0, 0, 0.5);}#chatgpt-mermaid-\_r_1d4\_ .cluster rect{fill:rgb(48, 48, 48);stroke:rgba(255, 255, 255, 0.15);stroke-width:1px;}#chatgpt-mermaid-\_r_1d4\_ .cluster text{fill:rgb(237, 237, 237);}#chatgpt-mermaid-\_r_1d4\_ .cluster span{color:rgb(237, 237, 237);}#chatgpt-mermaid-\_r_1d4\_ div.mermaidTooltip{position:absolute;text-align:center;max-width:200px;padding:2px;font-family:-apple-system-body,ui-sans-serif,-apple-system,system-ui,"Segoe UI",Helvetica,"Apple Color Emoji",Arial,sans-serif,"Segoe UI Emoji","Segoe UI Symbol";font-size:12px;background:rgb(48, 48, 48);border:1px solid rgba(255, 255, 255, 0.15);border-radius:2px;pointer-events:none;z-index:100;}#chatgpt-mermaid-\_r_1d4\_ .flowchartTitleText{text-anchor:middle;font-size:18px;fill:rgb(237, 237, 237);}#chatgpt-mermaid-\_r_1d4\_ rect.text{fill:none;stroke-width:0;}#chatgpt-mermaid-\_r_1d4\_ .icon-shape,#chatgpt-mermaid-\_r_1d4\_ .image-shape{background-color:rgb(0, 0, 0);text-align:center;}#chatgpt-mermaid-\_r_1d4\_ .icon-shape p,#chatgpt-mermaid-\_r_1d4\_ .image-shape p{background-color:rgb(0, 0, 0);padding:2px;}#chatgpt-mermaid-\_r_1d4\_ .icon-shape .label rect,#chatgpt-mermaid-\_r_1d4\_ .image-shape .label rect{opacity:0.5;background-color:rgb(0, 0, 0);fill:rgb(0, 0, 0);}#chatgpt-mermaid-\_r_1d4\_ .label-icon{display:inline-block;height:1em;overflow:visible;vertical-align:-0.125em;}#chatgpt-mermaid-\_r_1d4\_ .node .label-icon path{fill:currentColor;stroke:revert;stroke-width:revert;}#chatgpt-mermaid-\_r_1d4\_ .node .neo-node{stroke:rgb(31, 78, 148);}#chatgpt-mermaid-\_r_1d4\_ [data-look="neo"].node rect,#chatgpt-mermaid-\_r_1d4\_ [data-look="neo"].cluster rect,#chatgpt-mermaid-\_r_1d4\_ [data-look="neo"].node polygon{stroke:url(#chatgpt-mermaid-\_r_1d4\_-gradient);filter:drop-shadow( 1px 2px 2px rgba(185,185,185,1));}#chatgpt-mermaid-\_r_1d4\_ [data-look="neo"].swimlane.cluster rect{filter:none;}#chatgpt-mermaid-\_r_1d4\_ [data-look="neo"].node path{stroke:url(#chatgpt-mermaid-\_r_1d4\_-gradient);stroke-width:1px;}#chatgpt-mermaid-\_r_1d4\_ [data-look="neo"].node .outer-path{filter:drop-shadow( 1px 2px 2px rgba(185,185,185,1));}#chatgpt-mermaid-\_r_1d4\_ [data-look="neo"].node .neo-line path{stroke:rgb(31, 78, 148);filter:none;}#chatgpt-mermaid-\_r_1d4\_ [data-look="neo"].node circle{stroke:url(#chatgpt-mermaid-\_r_1d4\_-gradient);filter:drop-shadow( 1px 2px 2px rgba(185,185,185,1));}#chatgpt-mermaid-\_r_1d4\_ [data-look="neo"].node circle .state-start{fill:#000000;}#chatgpt-mermaid-\_r_1d4\_ [data-look="neo"].icon-shape .icon{fill:url(#chatgpt-mermaid-\_r_1d4\_-gradient);filter:drop-shadow( 1px 2px 2px rgba(185,185,185,1));}#chatgpt-mermaid-\_r_1d4\_ [data-look="neo"].icon-shape .icon-neo path{stroke:url(#chatgpt-mermaid-\_r_1d4\_-gradient);filter:drop-shadow( 1px 2px 2px rgba(185,185,185,1));}#chatgpt-mermaid-\_r_1d4\_ .node text{font-size:14px;font-weight:600;letter-spacing:normal;fill:rgb(153, 206, 255);}#chatgpt-mermaid-\_r_1d4\_ .edgeLabels text{font-size:13px;font-weight:600;letter-spacing:-0.08px;fill:rgb(153, 206, 255);}#chatgpt-mermaid-\_r_1d4\_ .node tspan[font-weight="normal"],#chatgpt-mermaid-\_r_1d4\_ .edgeLabels tspan[font-weight="normal"]{font-weight:600;}#chatgpt-mermaid-\_r_1d4\_ .edgeLabel .label rect{opacity:1;rx:13px;ry:13px;fill:rgb(0, 14, 26);stroke:rgb(26, 62, 95);stroke-width:1px;}#chatgpt-mermaid-\_r_1d4\_ .node rect,#chatgpt-mermaid-\_r_1d4\_ .node circle,#chatgpt-mermaid-\_r_1d4\_ .node ellipse,#chatgpt-mermaid-\_r_1d4\_ .node polygon,#chatgpt-mermaid-\_r_1d4\_ .node path{fill:rgb(0, 40, 77);stroke:rgba(255, 255, 255, 0.1);stroke-width:1px;}#chatgpt-mermaid-\_r_1d4\_ .node rect{rx:16px;ry:16px;}#chatgpt-mermaid-\_r_1d4\_ .mermaid-decision .label-container{fill:rgb(0, 14, 26);stroke:rgb(26, 62, 95);stroke-dasharray:2,2;}#chatgpt-mermaid-\_r_1d4\_ .edgePaths .flowchart-link{stroke:rgb(175, 175, 175);stroke-width:1px;stroke-linecap:round;stroke-linejoin:round;}#chatgpt-mermaid-\_r_1d4\_ .marker{fill:rgb(175, 175, 175);stroke:rgb(175, 175, 175);}#chatgpt-mermaid-\_r_1d4\_ :root{--mermaid-font-family:-apple-system-body,ui-sans-serif,-apple-system,system-ui,"Segoe UI",Helvetica,"Apple Color Emoji",Arial,sans-serif,"Segoe UI Emoji","Segoe UI Symbol";}Customer adds productsCheckoutStock and address valid?Show validation errorCreate pending orderPayment verificationPayment failed or retryOrder confirmedGrower notifiedGrower accepts?Cancellation or alternativeresolutionPreparingReady for pickupDelivery partner assignmentPartner acceptsPickup confirmedOut for deliveryCustomer OTP verificationOTP valid?DeliveredSettlement and feedbackNoYesFailedSuccessfulNoYesNoYes
+
+### **Complete order statuses**
+
+| Status             | Meaning                             |
+| ------------------ | ----------------------------------- |
+| CART               | Products selected                   |
+| CHECKOUT_PENDING   | Checkout in progress                |
+| PENDING_PAYMENT    | Payment not yet confirmed           |
+| PAYMENT_FAILED     | Payment failed                      |
+| CONFIRMED          | Payment/order confirmation complete |
+| GROWER_ACCEPTED    | Grower accepted                     |
+| PREPARING          | Produce being prepared              |
+| READY_FOR_PICKUP   | Order ready                         |
+| DELIVERY_ASSIGNING | Finding a delivery partner          |
+| DELIVERY_ASSIGNED  | Partner assigned                    |
+| PICKED_UP          | Partner collected order             |
+| OUT_FOR_DELIVERY   | Order in transit                    |
+| DELIVERED          | OTP-verified delivery               |
+| CANCELLED          | Order cancelled                     |
+| REFUND_PENDING     | Refund being processed              |
+| REFUNDED           | Refund completed                    |
+| DELIVERY_FAILED    | Delivery attempt unsuccessful       |
+
+Not every order must pass through every status. For example, an unpaid order cannot become a completed order.
+
+### **Critical business rules**
+
+1. A grower cannot accept an order for unavailable stock.
+2. A customer cannot pay a different amount from the verified backend amount.
+3. A delivery partner cannot pick up an unassigned order.
+4. A delivery partner cannot complete an order without valid completion verification.
+5. A customer cannot mark a payment successful by editing the frontend.
+6. An order cannot be completed twice.
+7. Cancellation and refund operations must be idempotent.
+8. Every significant status transition must be logged.
+
+### **Example: One complete order**
+
+**Example order**
+
+Delivered
+
+# **₹120**
+
+Illustrative order, not an actual transaction
+
+1. **Customer places order**
+
+   2 kg tomatoes at ₹40/kg and 1 kg leafy vegetables at ₹40/kg.
+2. **Payment verified**
+
+   Backend verifies the gateway confirmation.
+3. **Grower accepts**
+
+   Seller confirms product availability.
+4. **Order prepared**
+
+   Produce is collected and packed.
+5. **Delivery partner assigned**
+
+   Eligible nearby partner accepts.
+6. **Pickup confirmed**
+
+   Partner collects the correct order.
+7. **Live tracking**
+
+   Customer can monitor delivery progress.
+8. **OTP verified**
+
+   Backend verifies successful delivery.
+9. **Order closed**
+
+   Settlement records and feedback become available.
+
+# **11. Maps, GPS and real-time tracking**
+
+This functionality must work across all three applications.
+
+### **Customer application**
+
+- Display customer delivery address.
+- Show delivery partner location during an active delivery.
+- Show estimated arrival.
+- Show pickup and destination information.
+- Display delivery partner contact option.
+
+### **Delivery application**
+
+- Display grower pickup location.
+- Display customer destination.
+- Show navigation.
+- Share location during active deliveries.
+- Update delivery progress.
+
+### **Admin application**
+
+- View active orders.
+- View delivery partner assignment.
+- Monitor permitted live locations.
+- Identify delayed deliveries.
+- Review completed delivery records.
+
+### **Technical location workflow**
+
+```
+Delivery partner grants location permission
+             ↓
+Delivery app receives GPS coordinates
+             ↓
+Backend validates delivery assignment
+             ↓
+Location update stored
+             ↓
+Real-time event published
+             ↓
+Customer dashboard receives update
+             ↓
+Admin dashboard receives update
+```
+
+Location security requirements:
+
+- Location collection only during an active delivery.
+- Permission-based tracking.
+- Authenticated location updates.
+- Rate-limited location requests.
+- No public location access.
+- Stop tracking after completion.
+- Avoid unnecessarily retaining historical GPS data.
+
+For the initial implementation, Leaflet with an appropriate OpenStreetMap-compatible tile provider can provide the map interface. Do not assume that public map servers provide unlimited commercial usage.
+
+# **12. Database design — complete data structure**
+
+The database must represent the entire marketplace, not just users and products.
+
+Recommended Firestore collections:
+
+| Collection        | Purpose                             |
+| ----------------- | ----------------------------------- |
+| users             | Customer and account information    |
+| growerProfiles    | Seller profiles                     |
+| deliveryProfiles  | Delivery partner profiles           |
+| adminProfiles     | Administrative permissions          |
+| products          | Marketplace products                |
+| categories        | Product categories                  |
+| inventory         | Stock records                       |
+| carts             | Customer shopping carts             |
+| orders            | Main order records                  |
+| orderItems        | Individual ordered products         |
+| payments          | Payment transactions                |
+| refunds           | Refund transactions                 |
+| assignments       | Delivery assignments                |
+| deliveryLocations | Latest active location              |
+| deliveryEvents    | Delivery history                    |
+| reviews           | Customer feedback                   |
+| notifications     | User notifications                  |
+| addresses         | Saved delivery addresses            |
+| commissions       | Platform commission records         |
+| settlements       | Seller and delivery payouts         |
+| supportTickets    | Customer and seller complaints      |
+| certifications    | Verification evidence               |
+| aiInteractions    | AI interaction metadata             |
+| auditLogs         | Important system activities         |
+| serviceAreas      | Delivery availability configuration |
+| platformSettings  | Operational configuration           |
+
+### **Important database fields**
+
+**users**
+
+```
+userId
+fullName
+email
+phone
+accountStatus
+createdAt
+updatedAt
+```
+
+**growerProfiles**
+
+```
+growerId
+userId
+growerType
+location
+verificationStatus
+serviceArea
+payoutReference
+createdAt
+```
+
+**products**
+
+```
+productId
+growerId
+name
+description
+categoryId
+images
+price
+unit
+availableQuantity
+productStatus
+harvestDate
+certificationReference
+createdAt
+updatedAt
+```
+
+**orders**
+
+```
+orderId
+customerId
+growerId
+deliveryPartnerId
+items
+deliveryAddress
+subtotal
+deliveryFee
+discount
+totalAmount
+paymentStatus
+orderStatus
+createdAt
+updatedAt
+```
+
+**payments**
+
+```
+paymentId
+orderId
+gatewayReference
+amount
+currency
+paymentStatus
+verifiedAt
+createdAt
+```
+
+**deliveryEvents**
+
+```
+eventId
+orderId
+deliveryPartnerId
+eventType
+latitude
+longitude
+timestamp
+```
+
+**settlements**
+
+```
+settlementId
+beneficiaryId
+beneficiaryType
+grossAmount
+commission
+adjustments
+netAmount
+settlementStatus
+transactionReference
+createdAt
+```
+
+These are logical data structures. Firestore implementation must additionally define document IDs, indexes, data ownership, transaction boundaries and security rules.
+
+### **Data consistency requirements**
+
+- Never store a separate, independently editable order total in multiple places.
+- Use server-generated timestamps.
+- Use Firestore transactions or another safe consistency mechanism for inventory and order operations.
+- Store payment records separately from orders.
+- Store an immutable order-item price snapshot.
+- Keep audit records for important financial and administrative changes.
+- Avoid exposing private documents through public collection queries.
+
+# **13. Revenue model and business operations**
+
+ZENVEGO should earn revenue through transparent, sustainable marketplace operations.
+
+### **Revenue streams**
+
+1. **Marketplace commission:** A disclosed percentage or fixed fee on eligible completed orders.
+2. **Delivery fees:** Delivery charges collected according to the applicable delivery model.
+3. **Premium seller services:** Optional analytics, seller tools and business support.
+4. **Promoted listings:** Clearly identified paid product placements.
+5. **Future B2B services:** Bulk supply coordination and institutional purchasing.
+6. **Future AI services:** Advanced demand and business intelligence tools.
+
+### **Example commission calculation**
+
+ILLUSTRATIVE TRANSACTION
+
+# **₹100**
+
+Product sales value
+
+Seller gross sales
+
+**₹100**
+
+Platform commission (example 5%)
+
+**₹5**
+
+Grower payable
+
+**₹95**
+
+Excludes applicable taxes, refunds, gateway fees and other agreed adjustments. Delivery charges are calculated separately.
+
+The platform must disclose commission and settlement terms before growers start selling.
+
+### **Operational responsibilities**
+
+ZENVEGO must define:
+
+- Grower onboarding procedures.
+- Produce quality standards.
+- Seller verification procedures.
+- Packaging expectations.
+- Order acceptance deadlines.
+- Delivery partner onboarding.
+- Customer complaint resolution.
+- Refund and cancellation policies.
+- Seller settlement schedules.
+- Delivery partner payout schedules.
+- Food-related regulatory compliance where applicable.
+
+A marketplace cannot promise reliable fresh-produce delivery simply because its software has a tracking screen. It needs actual supply, order fulfilment and delivery operations.
+
+# **14. Complete API workflow**
+
+The Express backend is the central communication layer.
+
+The following API groups should be implemented.
+
+| API group      | Main operations                       |
+| -------------- | ------------------------------------- |
+| Authentication | Register, login verification, profile |
+| Customers      | Profile, addresses, preferences       |
+| Growers        | Registration, verification, dashboard |
+| Products       | Create, update, search, retrieve      |
+| Inventory      | Stock update, reserve, release        |
+| Cart           | Add, remove, update                   |
+| Orders         | Create, accept, reject, cancel        |
+| Payments       | Create payment, verify, refund        |
+| Delivery       | Assign, accept, pickup, complete      |
+| Tracking       | Location update and retrieval         |
+| Notifications  | Send and retrieve                     |
+| AI             | Search, voice, recommendations        |
+| Reviews        | Submit and moderate                   |
+| Admin          | Manage all authorized operations      |
+| Analytics      | Business and operational reports      |
+| Support        | Tickets and dispute resolution        |
+
+### **Suggested endpoint structure**
+
+```
+/api/auth/*
+/api/users/*
+/api/customers/*
+/api/growers/*
+/api/products/*
+/api/categories/*
+/api/inventory/*
+/api/cart/*
+/api/orders/*
+/api/payments/*
+/api/refunds/*
+/api/delivery/*
+/api/tracking/*
+/api/notifications/*
+/api/ai/*
+/api/reviews/*
+/api/admin/*
+/api/analytics/*
+/api/support/*
+```
+
+Examples of specific operations:
+
+```
+POST   /api/growers/register
+GET    /api/products
+POST   /api/products
+PATCH  /api/products/:id
+POST   /api/orders
+GET    /api/orders/:id
+POST   /api/orders/:id/accept
+POST   /api/orders/:id/ready
+POST   /api/delivery/assign
+POST   /api/delivery/:id/pickup
+POST   /api/delivery/:id/complete
+POST   /api/tracking/location
+GET    /api/orders/:id/tracking
+POST   /api/payments/create
+POST   /api/payments/webhook
+POST   /api/refunds
+GET    /api/admin/dashboard
+```
+
+Every endpoint must have appropriate authentication, role authorization, input validation, rate limits and error handling.
+
+# **15. Real-time notification system**
+
+Notifications are necessary because the four roles depend on each other's actions.
+
+| Event                     | Recipient                   |
+| ------------------------- | --------------------------- |
+| New order                 | Grower                      |
+| Order accepted            | Customer                    |
+| Order rejected            | Customer and admin          |
+| Order ready               | Delivery partner            |
+| Delivery assigned         | Delivery partner and grower |
+| Pickup confirmed          | Customer                    |
+| Delivery started          | Customer                    |
+| Delivery completed        | Customer and grower         |
+| Payment confirmed         | Customer                    |
+| Refund processed          | Customer                    |
+| New complaint             | Admin                       |
+| Seller approved           | Grower                      |
+| Delivery partner approved | Delivery partner            |
+
+Notification channels:
+
+- In-app notifications.
+- Email.
+- Push notifications where supported.
+- SMS or messaging services where configured and affordable.
+
+Notifications must not be the source of truth. The database order status is authoritative. If a notification fails, the user should still see the correct status when opening the application.
+
+# **16. Security and privacy — mandatory requirements**
+
+ZENVEGO handles user identities, addresses, phone numbers, payment references and live location. Security cannot be postponed until after launch.
+
+### **Authentication**
+
+- Secure registration.
+- Email/phone verification.
+- Password protection through the authentication provider.
+- Secure session management.
+- Password recovery.
+- Logout.
+- Account suspension.
+
+### **Role-based authorization**
+
+| Role             | Access                              |
+| ---------------- | ----------------------------------- |
+| Customer         | Own account and permitted orders    |
+| Grower           | Own products, stock and orders      |
+| Delivery partner | Assigned deliveries                 |
+| Admin            | Authorized administrative functions |
+
+### **Additional security**
+
+1. Validate every request on the backend.
+2. Never expose Firebase service credentials.
+3. Never expose payment gateway secret keys.
+4. Protect admin APIs.
+5. Enforce Firestore security rules.
+6. Validate webhook signatures.
+7. Prevent duplicate payment processing.
+8. Prevent unauthorized price manipulation.
+9. Protect personal contact information.
+10. Rate-limit sensitive endpoints.
+11. Maintain audit logs.
+12. Back up critical business data.
+13. Use HTTPS.
+14. Provide account deletion and privacy controls.
+15. Define appropriate retention and deletion rules.
+
+### **Important fraud prevention**
+
+Examples:
+
+- A customer cannot change the order amount using browser developer tools.
+- A grower cannot mark another grower's order as prepared.
+- A delivery partner cannot access unassigned orders.
+- A customer cannot reuse an old delivery OTP to complete another order.
+- An admin cannot make an undocumented financial adjustment.
+
+# **17. Website structure and user interface**
+
+The website should look like a professional agricultural marketplace, not a generic AI-generated dashboard.
+
+### **Main website pages**
+
+| Page             | Contents                       |
+| ---------------- | ------------------------------ |
+| Home             | Marketplace introduction       |
+| Explore          | Browse local products          |
+| Product details  | Product and grower information |
+| Search           | Search and filtering           |
+| Growers          | Discover local producers       |
+| About            | ZENVEGO mission                |
+| How it works     | Customer and grower process    |
+| Become a grower  | Seller onboarding              |
+| Delivery partner | Delivery onboarding            |
+| Login            | Authentication                 |
+| Register         | Account creation               |
+| Cart             | Selected products              |
+| Checkout         | Address and payment            |
+| Orders           | Order history                  |
+| Tracking         | Delivery status                |
+| Profile          | Account settings               |
+| Support          | Customer assistance            |
+
+### **Design direction**
+
+## **ZENVEGO design identity**
+
+Deep green
+
+Fresh green
+
+Off-white
+
+Dark text
+
+**Visual principles**
+
+- Clean and professional.
+- Simple navigation.
+- Clear typography.
+- Real agricultural product photography.
+- Consistent original ZENVEGO logo.
+- Responsive mobile-first design.
+- Accessible colours and controls.
+- No unnecessary animations.
+- No excessive gradients or decorative elements.
+
+### **Separate dashboard layouts**
+
+The customer should not see the grower's inventory controls.
+
+The grower should not see admin privileges.
+
+The delivery partner should see only the information necessary to fulfil assigned deliveries.
+
+The admin should have a dedicated management interface.
+
+# **18. Project folder structure**
+
+A recommended organization for the existing React/Vite/Express workspace:
+
+```
+ZENVEGO/
+│
+├── main/
+│   ├── src/
+│   │   ├── components/
+│   │   ├── pages/
+│   │   ├── customer/
+│   │   ├── grower/
+│   │   ├── auth/
+│   │   ├── services/
+│   │   ├── hooks/
+│   │   ├── context/
+│   │   └── assets/
+│   └── package.json
+│
+├── delivery/
+│   ├── src/
+│   │   ├── components/
+│   │   ├── pages/
+│   │   ├── dashboard/
+│   │   ├── tracking/
+│   │   ├── services/
+│   │   └── assets/
+│   └── package.json
+│
+├── admin/
+│   ├── src/
+│   │   ├── components/
+│   │   ├── pages/
+│   │   ├── dashboard/
+│   │   ├── users/
+│   │   ├── orders/
+│   │   ├── products/
+│   │   ├── finance/
+│   │   └── services/
+│   └── package.json
+│
+├── server/
+│   ├── src/
+│   │   ├── config/
+│   │   ├── middleware/
+│   │   ├── routes/
+│   │   ├── controllers/
+│   │   ├── services/
+│   │   ├── repositories/
+│   │   ├── validators/
+│   │   ├── integrations/
+│   │   ├── jobs/
+│   │   ├── utils/
+│   │   └── app.js
+│   └── package.json
+│
+├── shared/
+│   ├── constants/
+│   ├── schemas/
+│   └── types/
+│
+├── docs/
+│   ├── PRD.md
+│   ├── ARCHITECTURE.md
+│   ├── API.md
+│   ├── DATABASE.md
+│   ├── SECURITY.md
+│   └── TESTING.md
+│
+├── .gitignore
+└── README.md
+```
+
+This is a target organization, not an instruction to delete or replace the existing project. Existing working components should be inspected and reused before restructuring.
+
+# **19. Testing — how to ensure the platform actually works**
+
+A website that looks good but fails during checkout is not a completed product.
+
+ZENVEGO must undergo the following testing.
+
+### **A. Authentication testing**
+
+- Customer registration.
+- Grower registration.
+- Delivery partner registration.
+- Login.
+- Logout.
+- Password recovery.
+- Invalid credentials.
+- Role-based restrictions.
+
+### **B. Product testing**
+
+- Add product.
+- Edit product.
+- Delete or deactivate product.
+- Update stock.
+- Search.
+- Filter.
+- Out-of-stock behaviour.
+- Unauthorized product modification.
+
+### **C. Order testing**
+
+- Successful checkout.
+- Failed payment.
+- Duplicate payment webhook.
+- Grower rejection.
+- Order cancellation.
+- Stock reservation.
+- Stock restoration.
+- Delivery reassignment.
+- Duplicate delivery completion.
+
+### **D. Live tracking testing**
+
+- GPS permission denied.
+- GPS permission granted.
+- No internet connection.
+- Location updates.
+- Stale location.
+- Customer tracking access.
+- Unauthorized tracking access.
+- Tracking termination after delivery.
+
+### **E. Payment testing**
+
+- Successful transaction.
+- Failed transaction.
+- Pending transaction.
+- Duplicate webhook.
+- Refund.
+- Settlement reconciliation.
+
+### **F. AI testing**
+
+- Telugu voice input.
+- Tamil voice input.
+- Hindi voice input.
+- English voice input.
+- Incorrect speech recognition.
+- Product not available.
+- No nearby growers.
+- AI response with no supporting data.
+- AI service unavailable.
+
+### **G. Device testing**
+
+- Android phones.
+- Different screen sizes.
+- Desktop browsers.
+- Tablet layout.
+- Slow internet.
+- Interrupted network connections.
+
+### **H. Load and reliability testing**
+
+Test:
+
+- Multiple simultaneous customers.
+- Multiple growers receiving orders.
+- Concurrent inventory updates.
+- Multiple active deliveries.
+- Real-time tracking updates.
+- API rate limits.
+- Database quota usage.
+
+A scalability claim must be supported by measured testing, not just by using Firebase.
+
+# **20. Complete development roadmap**
+
+Do not build every feature simultaneously. That creates unfinished modules, broken integrations and difficult debugging.
+
+The correct implementation sequence is:
+
+## **ZENVEGO implementation phases**
+
+1. **Phase 1 — Project foundation**
+   - Inspect existing repository.
+   - Preserve existing logo.
+   - Confirm React/Vite/Express architecture.
+   - Configure Firebase.
+   - Configure authentication.
+   - Configure database.
+   - Configure environments.
+   - Set up GitHub.
+2. **Phase 2 — Customer marketplace**
+   - Landing page.
+   - Registration/login.
+   - Product browsing.
+   - Search and categories.
+   - Grower profiles.
+   - Cart.
+   - Customer profile.
+3. **Phase 3 — Grower system**
+   - Grower registration.
+   - Verification.
+   - Seller dashboard.
+   - Product listings.
+   - Inventory.
+   - Order management.
+   - Sales records.
+4. **Phase 4 — Order and payment engine**
+   - Cart validation.
+   - Checkout.
+   - Order creation.
+   - Payment integration.
+   - Payment verification.
+   - Cancellation.
+   - Refund workflow.
+5. **Phase 5 — Delivery application**
+   - Delivery registration.
+   - Verification.
+   - Availability.
+   - Assignment engine.
+   - Pickup.
+   - Navigation.
+   - Delivery OTP.
+   - Delivery earnings.
+6. **Phase 6 — Real-time infrastructure**
+   - Shared order updates.
+   - Live GPS tracking.
+   - Customer delivery view.
+   - Delivery partner contact.
+   - Admin monitoring.
+   - Notifications.
+7. **Phase 7 — Admin control panel**
+   - Dashboard.
+   - Customer management.
+   - Grower verification.
+   - Delivery management.
+   - Order monitoring.
+   - Financial records.
+   - Analytics.
+   - Support.
+8. **Phase 8 — ZEN AI**
+   - Voice input.
+   - Multilingual support.
+   - Product discovery.
+   - Seller assistance.
+   - Pricing assistance.
+   - Demand analysis.
+9. **Phase 9 — Security and testing**
+   - Authorization.
+   - Database rules.
+   - API security.
+   - Payment security.
+   - Integration testing.
+   - Load testing.
+   - Bug fixing.
+10. **Phase 10 — Deployment and pilot**
+    - Production environment.
+    - Domain and HTTPS.
+    - Database security.
+    - Monitoring.
+    - Backup strategy.
+    - Grower onboarding.
+    - Delivery partner onboarding.
+    - Limited-area pilot launch.
+
+# **21. Deployment and hosting workflow**
+
+The platform should be deployed as three independently accessible interfaces connected to one backend.
+
+| Application      | Example URL            |
+| ---------------- | ---------------------- |
+| Main marketplace | `www.zenvego.com`      |
+| Delivery         | `delivery.zenvego.com` |
+| Admin            | `admin.zenvego.com`    |
+| Backend API      | `api.zenvego.com`      |
+
+These are proposed domain structures, not existing deployed URLs.
+
+### **Deployment requirements**
+
+- Production frontend builds.
+- Backend deployment.
+- Firebase production configuration.
+- Secure environment variables.
+- Domain configuration.
+- HTTPS.
+- CORS configuration.
+- API health checks.
+- Error logging.
+- Database indexes.
+- Firestore security rules.
+- Backup and recovery procedures.
+- Monitoring and usage alerts.
+
+**Zero-budget deployment reality:** Firebase's free quotas and free hosting allowances can support development and a limited pilot. They do not guarantee unlimited production traffic. Payment gateways, SMS, some AI services and commercial map usage may introduce charges. Never enable paid services without understanding their billing requirements.
+
+# **22. Legal, regulatory and operational requirements**
+
+Before accepting real customers and sellers, ZENVEGO must establish the appropriate compliance framework.
+
+Important areas include:
+
+1. Business entity and applicable registration.
+2. Applicable food business and FSSAI requirements.
+3. Seller identity and verification.
+4. Applicable GST and invoicing requirements.
+5. Consumer protection and e-commerce obligations.
+6. Privacy policy.
+7. Terms and conditions.
+8. Cancellation and refund policy.
+9. Seller agreements.
+10. Delivery partner agreements.
+11. Payment and settlement compliance.
+12. Data protection and retention.
+13. Appropriate treatment of organic and certification claims.
+
+Requirements depend on the actual business structure and operating model. Obtain qualified Indian legal and tax advice before commercial launch.
+
+# **23. Initial launch strategy**
+
+Do not immediately launch across India.
+
+The better approach is a controlled local pilot.
+
+## **ZENVEGO launch model**
+
+Stage 1
+
+**Initial locality**
+
+- Identify a small operating area.
+- Onboard verified local growers.
+- Onboard delivery partners.
+- Confirm actual product availability.
+- Test customer orders.
+
+Stage 2
+
+**Local expansion**
+
+- Increase participating growers.
+- Add more service areas.
+- Improve delivery assignment.
+- Measure order completion.
+- Improve seller and customer experience.
+
+Stage 3
+
+**Regional expansion**
+
+- Introduce additional localities.
+- Improve demand forecasting.
+- Build operational teams.
+- Improve logistics.
+- Establish regional partnerships.
+
+Stage 4
+
+**Multi-city platform**
+
+- Multiple operating cities.
+- Regional seller networks.
+- Scalable infrastructure.
+- B2B marketplace.
+- Advanced AI intelligence.
+
+### **Performance indicators**
+
+Track these metrics from the beginning:
+
+| Metric                | What it measures        |
+| --------------------- | ----------------------- |
+| Active growers        | Available local supply  |
+| Active customers      | Customer adoption       |
+| Orders per day        | Marketplace activity    |
+| Average order value   | Transaction value       |
+| Order acceptance rate | Grower responsiveness   |
+| Fulfilment rate       | Successful orders       |
+| Delivery success rate | Logistics performance   |
+| Average delivery time | Delivery efficiency     |
+| Cancellation rate     | Operational problems    |
+| Repeat purchase rate  | Customer retention      |
+| Grower earnings       | Seller value            |
+| Contribution margin   | Business sustainability |
+
+# **24. Final functionality checklist**
+
+This is the master completion checklist. Every item must be implemented and tested before claiming that the corresponding functionality is complete.
+
+**Project completion tracker**
+
+0/84
+
+0% of checklist marked complete. This is your manual progress tracker, not an automatic code audit.
+
+**1. Platform foundation**
+
+0 / 7 completed
+
+React + Vite + Express architecture
+
+Shared backend and API
+
+Firebase Authentication
+
+Firestore database
+
+Secure environment configuration
+
+Responsive interface
+
+Original ZENVEGO logo preserved
+
+**2. Customer**
+
+0 / 13 completed
+
+Registration and login
+
+Location and address management
+
+Product marketplace
+
+Search and filters
+
+Product details
+
+ZEN AI assistant
+
+Cart and checkout
+
+Payment
+
+Order history
+
+Live tracking
+
+Delivery contact
+
+OTP completion
+
+Reviews and support
+
+**3. Grower**
+
+0 / 12 completed
+
+Seller registration
+
+Verification workflow
+
+Seller dashboard
+
+Product listing
+
+Product photos
+
+Inventory management
+
+AI pricing assistance
+
+Order acceptance and rejection
+
+Order preparation
+
+Pickup handover
+
+Sales reports
+
+Settlement history
+
+**4. Delivery partner**
+
+0 / 12 completed
+
+Registration and verification
+
+Online/offline availability
+
+Delivery dashboard
+
+Order assignment
+
+Assignment acceptance
+
+Pickup navigation
+
+Pickup confirmation
+
+Customer navigation
+
+Live GPS sharing
+
+Customer contact
+
+Delivery OTP
+
+Earnings and history
+
+**5. Admin**
+
+0 / 15 completed
+
+Secure admin login
+
+Dashboard analytics
+
+Customer management
+
+Grower verification
+
+Product moderation
+
+Delivery partner management
+
+Order management
+
+Assignment monitoring
+
+Payment management
+
+Refund management
+
+Commission management
+
+Settlement management
+
+Support and disputes
+
+Audit logs
+
+Platform settings
+
+**6. AI and intelligence**
+
+0 / 11 completed
+
+Telugu support
+
+Tamil support
+
+Hindi support
+
+English support
+
+Voice input
+
+Product discovery
+
+Grower assistance
+
+Pricing suggestions
+
+Demand analysis
+
+Inventory insights
+
+AI failure handling
+
+**7. Infrastructure and reliability**
+
+0 / 14 completed
+
+Real-time order events
+
+Real-time tracking
+
+Maps
+
+Notifications
+
+Payment gateway verification
+
+Firestore security rules
+
+Backend role authorization
+
+Rate limiting
+
+Error handling
+
+Load testing
+
+Monitoring
+
+Backup and recovery
+
+Production deployment
+
+Legal and policy readiness
+
+Reset checklist
+
+# **25. Final definition of ZENVEGO**
+
+ZENVEGO is a technology-enabled hyperlocal agricultural marketplace designed to create a direct digital connection between urban growers, terrace gardeners, small farmers, independent producers and consumers.
+
+The platform provides a common ecosystem where growers can register, manage their agricultural products, maintain inventory, receive orders and generate income. Customers can discover nearby produce, communicate with the marketplace through multilingual AI assistance, purchase available products and track their deliveries. Delivery partners manage assignments, pickup, navigation and order completion through a dedicated delivery interface. Administrators oversee verification, marketplace operations, payments, delivery performance, customer support and business analytics through a centralized administration system.
+
+Its intelligent technology layer, ZEN AI, supports voice-first product discovery, multilingual interaction, grower assistance, price suggestions and demand intelligence. Its hyperlocal logistics layer connects nearby producers with consumers through location-aware discovery, delivery assignment and real-time tracking.
+
+The long-term objective is to establish a scalable, reliable and sustainable local agricultural commerce network that supports small producers, promotes urban farming and improves access to locally grown fresh produce.
+
+## **26. The most important implementation decisions**
+
+These are the decisions I recommend treating as the baseline for the final build:
+
+| Decision                | Final direction                    |
+| ----------------------- | ---------------------------------- |
+| Existing project        | Preserve React + Vite + Express    |
+| Database                | Firebase Firestore                 |
+| Authentication          | Firebase Authentication            |
+| Main application        | Customer + Grower                  |
+| Delivery application    | Separate interface                 |
+| Admin application       | Separate protected interface       |
+| Backend                 | One shared Express backend         |
+| Tracking                | Permission-based real-time GPS     |
+| Initial delivery radius | Approximately 3 km, configurable   |
+| AI                      | ZEN AI                             |
+| Voice languages         | Telugu, Tamil, Hindi, English      |
+| Maps                    | Leaflet with suitable map provider |
+| Logo                    | Preserve original ZENVEGO logo     |
+| Initial business model  | Hyperlocal producer-to-consumer    |
+| Initial deployment      | Limited-area pilot                 |
+| Long-term objective     | Multi-city expansion               |
+
+**Three things must not be compromised:**
+
+1. **Real functionality:** No fake payment success, simulated tracking presented as live GPS, imaginary inventory or dummy order completion.
+2. **Data security:** No exposed credentials, unauthorized admin access, public customer locations or uncontrolled financial operations.
+3. **Operational reliability:** Inventory, payments, seller acceptance, delivery assignment and order status must remain consistent across all applications.
+
+**My final recommendation:** Freeze this as the ZENVEGO master product specification. Develop in phases, preserve working code, and integrate and test each module before moving to the next. Do not keep redesigning the architecture or adding features before the complete order-to-delivery workflow works reliably.

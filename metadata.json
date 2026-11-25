@@ -1,0 +1,6 @@
+{
+  "name": "Zenvego",
+  "description": "Hyperlocal Fresh Produce Marketplace connecting terrace gardens, urban growers, eco-delivery partners, and neighborhood households.",
+  "requestFramePermissions": ["camera", "geolocation", "microphone"],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
